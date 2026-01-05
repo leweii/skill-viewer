@@ -79,7 +79,7 @@ English (default), with UI support for 8 languages
 1. **Create ZIP file**:
    ```bash
    cd extension
-   zip -r ../skill-viewer.zip . -x "*.DS_Store" -x "store/*" -x "*.svg"
+   zip -r ../skill-viewer.zip . -x "*.DS_Store" -x "store/*" -x "screenshots/*" -x "*.svg"
    ```
 
 2. **Go to Developer Dashboard**:
