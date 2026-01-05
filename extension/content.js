@@ -71,24 +71,25 @@
     if (currentRepo === repoInfo.full) return;
     currentRepo = repoInfo.full;
 
-    // Show loading state
-    showSidebar();
-    renderLoading();
-
     try {
       const branch = detectBranch();
       const skills = await fetchSkills(repoInfo.owner, repoInfo.repo, branch);
 
+      // Don't show sidebar if no skills found
       if (skills.length === 0) {
-        renderEmpty();
+        removeSidebar();
         return;
       }
+
+      // Show sidebar only when skills are found
+      showSidebar();
 
       // Render skills
       await renderSkills(skills, repoInfo, branch);
     } catch (err) {
       console.error('Skill Viewer error:', err);
-      renderError(err.message);
+      // Don't show error sidebar, just log it
+      removeSidebar();
     }
   }
 
