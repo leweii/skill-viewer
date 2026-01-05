@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Viewer Settings</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f6f8fa;
+      --text-primary: #24292f;
+      --text-secondary: #57606a;
+      --border-color: #d0d7de;
+      --accent-color: #0969da;
+      --accent-hover: #0550ae;
+      --success-color: #1a7f37;
+      --error-color: #cf222e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--bg-primary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input[type="password"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .hint a {
+      color: var(--accent-color);
+    }
+
+    /* Provider radio buttons */
+    .provider-options {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .provider-option {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .provider-option input {
+      margin-right: 6px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    button:hover {
+      background: var(--bg-secondary);
+    }
+
+    button.primary {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+
+    button.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .status.success {
+      display: block;
+      background: #dafbe1;
+      color: var(--success-color);
+      border: 1px solid #a7f3d0;
+    }
+
+    .status.error {
+      display: block;
+      background: #ffebe9;
+      color: var(--error-color);
+      border: 1px solid #ff8182;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .checkbox-item input {
+      margin-right: 10px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .checkbox-item label {
+      margin: 0;
+      font-weight: normal;
+    }
+
+    .language-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .language-group label {
+      margin-bottom: 6px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .footer a {
+      color: var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="title">Skill Viewer Settings</h1>
+
+    <div class="section">
+      <div class="section-title" id="section-provider">AI Provider</div>
+
+      <div class="provider-options">
+        <label class="provider-option">
+          <input type="radio" name="provider" value="gemini" checked>
+          Gemini
+        </label>
+        <label class="provider-option">
+          <input type="radio" name="provider" value="openai">
+          OpenAI
+        </label>
+        <label class="provider-option">
+          <input type="radio" name="provider" value="claude">
+          Claude
+        </label>
+      </div>
+
+      <label for="api-key" id="label-api-key">API Key</label>
+      <input type="password" id="api-key" placeholder="AIza...">
+      <p class="hint" id="key-hint">
+        Get your key at <a href="https://aistudio.google.com/apikey" target="_blank" id="key-link">aistudio.google.com</a>
+      </p>
+
+      <div class="button-group">
+        <button id="test-btn">Test Key</button>
+        <button id="save-btn" class="primary">Save</button>
+      </div>
+      <div id="status" class="status"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" id="section-language">Language Settings</div>
+
+      <div class="language-row">
+        <div class="language-group">
+          <label for="ui-language" id="label-ui-language">Interface Language</label>
+          <select id="ui-language">
+            <option value="en">English</option>
+            <option value="zh-CN">简体中文</option>
+            <option value="zh-TW">繁體中文</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="es">Espanol</option>
+            <option value="fr">Francais</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </div>
+        <div class="language-group">
+          <label for="summary-language" id="label-summary-language">Summary Language</label>
+          <select id="summary-language">
+            <option value="en">English</option>
+            <option value="zh-CN">简体中文</option>
+            <option value="zh-TW">繁體中文</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="es">Espanol</option>
+            <option value="fr">Francais</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" id="section-display">Display</div>
+
+      <div class="checkbox-item">
+        <input type="checkbox" id="auto-open" checked>
+        <label for="auto-open" id="label-auto-open">Auto-open sidebar when skills are found</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="dark-mode">
+        <label for="dark-mode" id="label-dark-mode">Dark mode</label>
+      </div>
+    </div>
+
+    <div class="footer">
+      Skill Viewer v1.1.0 |
+      <a href="https://github.com/anthropics/claude-code" target="_blank">Claude Code</a>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

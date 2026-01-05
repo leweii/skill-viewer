@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
+  <!-- Background gradient -->
+  <rect width="440" height="280" fill="#1a1a2e"/>
+
+  <!-- Decorative circles -->
+  <circle cx="380" cy="50" r="120" fill="#7C3AED" opacity="0.15"/>
+  <circle cx="60" cy="230" r="80" fill="#4F46E5" opacity="0.1"/>
+
+  <!-- Logo -->
+  <g transform="translate(40, 70)">
+    <rect x="0" y="0" width="80" height="80" rx="16" fill="#7C3AED"/>
+    <g transform="translate(15, 12)">
+      <path d="M0 8 C0 3.6 3.6 0 8 0 L32 0 L50 16 L50 48 C50 52.4 46.4 56 42 56 L8 56 C3.6 56 0 52.4 0 48 Z" fill="#FFFFFF"/>
+      <path d="M32 0 L32 12 C32 14.2 33.8 16 36 16 L50 16 Z" fill="#E5E7EB"/>
+      <rect x="8" y="24" width="24" height="4" rx="2" fill="#7C3AED"/>
+      <rect x="8" y="32" width="34" height="4" rx="2" fill="#A78BFA"/>
+      <rect x="8" y="40" width="20" height="4" rx="2" fill="#C4B5FD"/>
+    </g>
+    <g transform="translate(52, 45)">
+      <path d="M10 0 L12.2 7.8 L20 10 L12.2 12.2 L10 20 L7.8 12.2 L0 10 L7.8 7.8 Z" fill="#FBBF24"/>
+    </g>
+  </g>
+
+  <!-- Title -->
+  <text x="140" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#FFFFFF">Skill Viewer</text>
+
+  <!-- Subtitle -->
+  <text x="140" y="130" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#A78BFA">View Claude Code skills on GitHub</text>
+
+  <!-- Feature pills -->
+  <g transform="translate(140, 155)">
+    <rect x="0" y="0" width="100" height="28" rx="14" fill="#7C3AED" opacity="0.3"/>
+    <text x="50" y="19" font-family="system-ui, sans-serif" font-size="12" fill="#FFFFFF" text-anchor="middle">AI Summaries</text>
+
+    <rect x="110" y="0" width="90" height="28" rx="14" fill="#7C3AED" opacity="0.3"/>
+    <text x="155" y="19" font-family="system-ui, sans-serif" font-size="12" fill="#FFFFFF" text-anchor="middle">Multi-LLM</text>
+
+    <rect x="210" y="0" width="80" height="28" rx="14" fill="#7C3AED" opacity="0.3"/>
+    <text x="250" y="19" font-family="system-ui, sans-serif" font-size="12" fill="#FFFFFF" text-anchor="middle">8 Languages</text>
+  </g>
+
+  <!-- Provider logos text -->
+  <text x="140" y="220" font-family="system-ui, sans-serif" font-size="11" fill="#6B7280">Supports: Gemini | OpenAI | Claude</text>
+</svg>
