@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Viewer - Claude Code Skills Browser for GitHub</title>
+  <meta name="description" content="View and summarize Claude Code skills on GitHub with AI-powered summaries using Gemini, OpenAI, or Claude.">
+  <link rel="icon" type="image/png" href="icons/icon128.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --bg: #0f0f0f;
+      --bg-secondary: #1a1a1a;
+      --text: #ffffff;
+      --text-muted: #a1a1aa;
+      --border: #27272a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    .hero-icon {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    /* Screenshots */
+    .screenshots {
+      padding: 60px 0;
+    }
+
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .screenshot-grid img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: transform 0.3s;
+    }
+
+    .screenshot-grid img:hover {
+      transform: scale(1.02);
+    }
+
+    /* Features */
+    .features {
+      padding: 80px 0;
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 48px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+
+    .feature {
+      background: var(--bg-secondary);
+      padding: 32px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .feature h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .feature p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Providers */
+    .providers {
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .providers h2 {
+      font-size: 2rem;
+      margin-bottom: 32px;
+    }
+
+    .provider-logos {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .provider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+
+    .provider-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Languages */
+    .languages {
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .languages h2 {
+      font-size: 2rem;
+      margin-bottom: 32px;
+    }
+
+    .language-list {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .language-tag {
+      background: var(--bg-secondary);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero p {
+        font-size: 1.1rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="#" class="logo">
+          <img src="icons/icon128.png" alt="Skill Viewer">
+          Skill Viewer
+        </a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#screenshots">Screenshots</a>
+          <a href="https://github.com/leweii/skill-viewer">GitHub</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <img src="../extension/icons/icon128.png" alt="Skill Viewer" class="hero-icon">
+        <h1>Skill Viewer</h1>
+        <p>View and summarize Claude Code skills on GitHub with AI-powered summaries using Gemini, OpenAI, or Claude.</p>
+        <div class="cta-buttons">
+          <a href="#" class="btn btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C8.21 0 8.21 0 8.21 0C8.21 0 4 0 4 4.21V19.79C4 24 8.21 24 8.21 24H15.79C20 24 20 19.79 20 19.79V4.21C20 0 15.79 0 15.79 0C15.79 0 12 0 12 0ZM12 2C14.21 2 18 2 18 4.21V16H6V4.21C6 2 9.79 2 12 2ZM12 18C13.1 18 14 18.9 14 20S13.1 22 12 22 10 21.1 10 20 10.9 18 12 18Z"/></svg>
+            Install from Chrome Web Store
+          </a>
+          <a href="https://github.com/leweii/skill-viewer" class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="screenshots" id="screenshots">
+      <div class="container">
+        <div class="screenshot-grid">
+          <img src="screenshots/demo.jpg" alt="Skill Viewer sidebar showing skills">
+          <img src="screenshots/demo2.jpg" alt="Skill Viewer settings page">
+          <img src="screenshots/demo3.jpg" alt="Skill Viewer AI summaries">
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="container">
+        <h2>Features</h2>
+        <div class="feature-grid">
+          <div class="feature">
+            <div class="feature-icon">&#128269;</div>
+            <h3>Auto-Detection</h3>
+            <p>Automatically finds Claude Code skills in .claude/skills/ or skills/ directories when browsing GitHub.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#129302;</div>
+            <h3>AI Summaries</h3>
+            <p>Get concise 2-3 sentence summaries explaining what each skill does, powered by your choice of LLM.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#127760;</div>
+            <h3>8 Languages</h3>
+            <p>Full UI and summary support for English, Chinese, Japanese, Korean, Spanish, French, and German.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#128065;</div>
+            <h3>Draggable Sidebar</h3>
+            <p>Resize the sidebar width from 250px to 600px. Your preference is saved automatically.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#127769;</div>
+            <h3>Dark Mode</h3>
+            <p>Seamlessly matches your system preference or GitHub's dark theme.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#128274;</div>
+            <h3>Privacy First</h3>
+            <p>No data collection. API keys stored locally. Only communicates with GitHub and your chosen LLM.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="providers">
+      <div class="container">
+        <h2>Choose Your AI Provider</h2>
+        <div class="provider-logos">
+          <div class="provider">
+            <div class="provider-icon">G</div>
+            <span>Gemini</span>
+          </div>
+          <div class="provider">
+            <div class="provider-icon">O</div>
+            <span>OpenAI</span>
+          </div>
+          <div class="provider">
+            <div class="provider-icon">C</div>
+            <span>Claude</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="languages">
+      <div class="container">
+        <h2>Available Languages</h2>
+        <div class="language-list">
+          <span class="language-tag">English</span>
+          <span class="language-tag">简体中文</span>
+          <span class="language-tag">繁體中文</span>
+          <span class="language-tag">日本語</span>
+          <span class="language-tag">한국어</span>
+          <span class="language-tag">Español</span>
+          <span class="language-tag">Français</span>
+          <span class="language-tag">Deutsch</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        Built for <a href="https://github.com/anthropics/claude-code">Claude Code</a> |
+        <a href="https://github.com/leweii/skill-viewer">Source Code</a> |
+        MIT License
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
