@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Skill Viewer</title>
+  <link rel="icon" type="image/png" href="icons/icon128.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #ffffff;
+      line-height: 1.8;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .updated {
+      color: #a1a1aa;
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin: 32px 0 16px;
+      color: #6366f1;
+    }
+
+    p, ul {
+      color: #d4d4d8;
+      margin-bottom: 16px;
+    }
+
+    ul {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    a {
+      color: #6366f1;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 12px 24px;
+      background: #1a1a1a;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: January 6, 2025</p>
+
+    <p>Skill Viewer ("the Extension") is committed to protecting your privacy. This policy explains how we handle your data.</p>
+
+    <h2>Data Collection</h2>
+    <p><strong>We do not collect any personal data.</strong></p>
+    <p>The Extension does not collect, store, or transmit any personally identifiable information to our servers. We have no servers - all processing happens locally in your browser.</p>
+
+    <h2>Data Storage</h2>
+    <p>The following data is stored locally in your browser using Chrome's storage API:</p>
+    <ul>
+      <li><strong>API Keys</strong> - Your API keys for Gemini, OpenAI, or Claude (stored locally, never transmitted to us)</li>
+      <li><strong>User Preferences</strong> - Language settings, dark mode preference, sidebar width</li>
+      <li><strong>Cached Summaries</strong> - AI-generated skill summaries to reduce API calls</li>
+    </ul>
+    <p>This data never leaves your browser except when making API calls to your chosen AI provider.</p>
+
+    <h2>Third-Party Services</h2>
+    <p>The Extension communicates with the following third-party services:</p>
+    <ul>
+      <li><strong>GitHub API</strong> - To fetch repository file structure and skill content (public data only)</li>
+      <li><strong>AI Providers</strong> (your choice):
+        <ul>
+          <li>Google Gemini API</li>
+          <li>OpenAI API</li>
+          <li>Anthropic Claude API</li>
+        </ul>
+      </li>
+    </ul>
+    <p>When you request a skill summary, the skill content is sent to your chosen AI provider. Please review their respective privacy policies.</p>
+
+    <h2>Permissions</h2>
+    <p>The Extension requires certain permissions to function:</p>
+    <ul>
+      <li><strong>storage</strong> - Save your settings and cached summaries locally</li>
+      <li><strong>activeTab</strong> - Access the current GitHub page to detect skills</li>
+      <li><strong>Host permissions</strong> - Access GitHub and AI provider APIs</li>
+    </ul>
+
+    <h2>Data Sharing</h2>
+    <p>We do not sell, trade, or transfer your data to third parties. The only external communication is:</p>
+    <ul>
+      <li>GitHub API requests to fetch public repository data</li>
+      <li>AI provider API requests using your own API key</li>
+    </ul>
+
+    <h2>Data Security</h2>
+    <p>Your API keys and settings are stored locally in your browser's secure storage. We recommend:</p>
+    <ul>
+      <li>Using API keys with minimal required permissions</li>
+      <li>Regularly rotating your API keys</li>
+      <li>Not sharing your browser profile with untrusted users</li>
+    </ul>
+
+    <h2>Changes to This Policy</h2>
+    <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated revision date.</p>
+
+    <h2>Contact</h2>
+    <p>If you have questions about this privacy policy, please open an issue on our <a href="https://github.com/leweii/skill-viewer">GitHub repository</a>.</p>
+
+    <a href="index.html" class="back-link">← Back to Skill Viewer</a>
+  </div>
+</body>
+</html>
