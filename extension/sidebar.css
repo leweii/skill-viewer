@@ -405,13 +405,13 @@
   margin: 0 0 20px 0;
   font-size: 18px;
   font-weight: 600;
-  color: #24292f;
+  color: #000000;
   border-bottom: 1px solid #d0d7de;
   padding-bottom: 12px;
 }
 
 .dark .sv-modal-title {
-  color: #c9d1d9;
+  color: #ffffff;
   border-bottom-color: #30363d;
 }
 
@@ -433,23 +433,23 @@
 
 .sv-radio-label {
   flex: 1;
-  color: #24292f;
+  color: #000000;
   font-weight: 500;
 }
 
 .dark .sv-radio-label {
-  color: #c9d1d9;
+  color: #ffffff;
 }
 
 .sv-radio-hint {
   font-size: 12px;
-  color: #57606a;
+  color: #333333;
   font-weight: 400;
   margin-left: 8px;
 }
 
 .dark .sv-radio-hint {
-  color: #8b949e;
+  color: #aaaaaa;
 }
 
 /* Custom path input */
