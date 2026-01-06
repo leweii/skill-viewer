@@ -378,7 +378,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1000001;
   display: flex;
   align-items: center;
@@ -387,22 +387,32 @@
 
 .sv-modal {
   background: #ffffff;
-  border-radius: 8px;
-  padding: 20px;
-  width: 320px;
+  border-radius: 12px;
+  padding: 24px;
+  width: 340px;
   max-width: 90vw;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  border: 1px solid #d0d7de;
 }
 
 .dark .sv-modal {
   background: #161b22;
   border: 1px solid #30363d;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
 
 .sv-modal-title {
-  margin: 0 0 16px 0;
-  font-size: 16px;
+  margin: 0 0 20px 0;
+  font-size: 18px;
   font-weight: 600;
+  color: #24292f;
+  border-bottom: 1px solid #d0d7de;
+  padding-bottom: 12px;
+}
+
+.dark .sv-modal-title {
+  color: #c9d1d9;
+  border-bottom-color: #30363d;
 }
 
 /* Radio options */
