@@ -415,6 +415,16 @@
   border-bottom-color: #30363d;
 }
 
+.sv-modal-desc {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #555555;
+}
+
+.sv-modal.dark .sv-modal-desc {
+  color: #aaaaaa;
+}
+
 /* Radio options */
 .sv-radio-group {
   margin-bottom: 16px;

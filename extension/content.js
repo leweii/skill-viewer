@@ -420,6 +420,7 @@
     overlay.innerHTML = `
       <div class="sv-modal ${isDark ? 'dark' : ''}">
         <h3 class="sv-modal-title">Select target path</h3>
+        <p class="sv-modal-desc">Command will be copied to clipboard. Paste and run in terminal.</p>
           <div class="sv-radio-group">
             <label class="sv-radio-option">
               <input type="radio" name="sv-path" value="global" checked>
@@ -445,7 +446,7 @@
           </div>
           <div class="sv-modal-buttons">
             <button class="sv-modal-btn cancel">Cancel</button>
-            <button class="sv-modal-btn primary confirm">Confirm</button>
+            <button class="sv-modal-btn primary confirm">Copy</button>
           </div>
         </div>
       `;
