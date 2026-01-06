@@ -304,6 +304,16 @@
       });
     });
 
+    // Bind collect buttons
+    content.querySelectorAll('.sv-collect-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent triggering collapse
+        const skillName = btn.dataset.skill;
+        const skillPath = btn.dataset.path;
+        showCollectModal(skillName, skillPath);
+      });
+    });
+
     // Load content for each skill
     for (const skill of skills) {
       const skillFile = skill.files.find(f => f.name === 'SKILL.md');
@@ -384,11 +394,132 @@
     if (existing) existing.remove();
 
     const toast = document.createElement('div');
-    toast.className = `sv-toast ${isError ? 'error' : ''}`;
+    toast.className = `sv-toast ${isError ? 'error' : 'success'}`;
     toast.textContent = message;
     document.body.appendChild(toast);
 
     setTimeout(() => toast.remove(), 3000);
+  }
+
+  function showCollectModal(skillName, skillPath) {
+    // Remove existing modal
+    const existing = document.querySelector('.sv-modal-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'sv-modal-overlay';
+
+    // Check dark mode
+    chrome.storage.local.get(['darkMode'], (settings) => {
+      const isDark = settings.darkMode;
+
+      overlay.innerHTML = `
+        <div class="sv-modal ${isDark ? 'dark' : ''}">
+          <h3 class="sv-modal-title">Select target path</h3>
+          <div class="sv-radio-group">
+            <label class="sv-radio-option">
+              <input type="radio" name="sv-path" value="global" checked>
+              <span class="sv-radio-label">
+                ~/.claude/skills/
+                <span class="sv-radio-hint">(Global)</span>
+              </span>
+            </label>
+            <label class="sv-radio-option">
+              <input type="radio" name="sv-path" value="project">
+              <span class="sv-radio-label">
+                ./.claude/skills/
+                <span class="sv-radio-hint">(Project)</span>
+              </span>
+            </label>
+            <label class="sv-radio-option">
+              <input type="radio" name="sv-path" value="custom">
+              <span class="sv-radio-label">Custom</span>
+            </label>
+            <div class="sv-custom-path">
+              <input type="text" placeholder="Enter custom path..." value="">
+            </div>
+          </div>
+          <div class="sv-modal-buttons">
+            <button class="sv-modal-btn cancel">Cancel</button>
+            <button class="sv-modal-btn primary confirm">Confirm</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Handle radio change for custom path visibility
+      const radios = overlay.querySelectorAll('input[name="sv-path"]');
+      const customPathDiv = overlay.querySelector('.sv-custom-path');
+
+      radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          if (radio.value === 'custom' && radio.checked) {
+            customPathDiv.classList.add('visible');
+          } else {
+            customPathDiv.classList.remove('visible');
+          }
+        });
+      });
+
+      // Handle cancel
+      overlay.querySelector('.cancel').addEventListener('click', () => {
+        overlay.remove();
+      });
+
+      // Handle click outside modal
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.remove();
+        }
+      });
+
+      // Handle confirm
+      overlay.querySelector('.confirm').addEventListener('click', () => {
+        const selected = overlay.querySelector('input[name="sv-path"]:checked').value;
+        let targetPath;
+
+        if (selected === 'global') {
+          targetPath = '~/.claude/skills/';
+        } else if (selected === 'project') {
+          targetPath = './.claude/skills/';
+        } else {
+          targetPath = overlay.querySelector('.sv-custom-path input').value.trim();
+          if (!targetPath) {
+            targetPath = '~/.claude/skills/';
+          }
+          if (!targetPath.endsWith('/')) {
+            targetPath += '/';
+          }
+        }
+
+        generateAndCopyCommand(skillName, skillPath, targetPath);
+        overlay.remove();
+      });
+    });
+  }
+
+  function generateAndCopyCommand(skillName, skillPath, targetPath) {
+    const { repoInfo, branch } = window.__skillViewerRepoInfo || {};
+
+    if (!repoInfo) {
+      showToast('Error: Repository info not available', true);
+      return;
+    }
+
+    // Generate degit command
+    // Format: npx degit owner/repo/path targetPath/skillName
+    const sourcePath = `${repoInfo.owner}/${repoInfo.repo}/${skillPath}`;
+    const destPath = `${targetPath}${skillName}`;
+    const command = `npx degit ${sourcePath} ${destPath}`;
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(command).then(() => {
+      showToast('Command copied, paste in terminal to execute');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      showToast('Failed to copy command', true);
+    });
   }
 
   function escapeHtml(str) {
