@@ -395,7 +395,7 @@
   border: 1px solid #d0d7de;
 }
 
-.dark .sv-modal {
+.sv-modal.dark {
   background: #161b22;
   border: 1px solid #30363d;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
@@ -410,7 +410,7 @@
   padding-bottom: 12px;
 }
 
-.dark .sv-modal-title {
+.sv-modal.dark .sv-modal-title {
   color: #ffffff;
   border-bottom-color: #30363d;
 }
@@ -437,7 +437,7 @@
   font-weight: 500;
 }
 
-.dark .sv-radio-label {
+.sv-modal.dark .sv-radio-label {
   color: #ffffff;
 }
 
@@ -448,7 +448,7 @@
   margin-left: 8px;
 }
 
-.dark .sv-radio-hint {
+.sv-modal.dark .sv-radio-hint {
   color: #aaaaaa;
 }
 
@@ -473,10 +473,10 @@
   color: #24292f;
 }
 
-.dark .sv-custom-path input {
+.sv-modal.dark .sv-custom-path input {
   background: #0d1117;
   border-color: #30363d;
-  color: #c9d1d9;
+  color: #ffffff;
 }
 
 /* Modal buttons */
@@ -501,13 +501,13 @@
   background: #eaeef2;
 }
 
-.dark .sv-modal-btn {
+.sv-modal.dark .sv-modal-btn {
   background: #21262d;
   border-color: #30363d;
-  color: #c9d1d9;
+  color: #ffffff;
 }
 
-.dark .sv-modal-btn:hover {
+.sv-modal.dark .sv-modal-btn:hover {
   background: #30363d;
 }
 
