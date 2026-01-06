@@ -511,10 +511,11 @@
     }
 
     // Generate degit command
-    // Format: npx degit owner/repo/path#branch targetPath/skillName
+    // Format: npx degit "owner/repo/path#branch" targetPath/skillName
+    // Quote the source path to prevent shell interpretation of #
     const sourcePath = `${repoInfo.owner}/${repoInfo.repo}/${skillPath}#${branch}`;
     const destPath = `${targetPath}${skillName}`;
-    const command = `npx degit ${sourcePath} ${destPath}`;
+    const command = `npx degit "${sourcePath}" "${destPath}"`;
 
     // Copy to clipboard
     navigator.clipboard.writeText(command).then(() => {
