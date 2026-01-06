@@ -23,7 +23,15 @@ const i18n = {
     "summaryLanguage": "Summary Language",
     "autoOpen": "Auto-open sidebar when skills are found",
     "darkMode": "Dark mode",
-    "getKeyAt": "Get your key at"
+    "getKeyAt": "Get your key at",
+    "collect": "Collect",
+    "selectTargetPath": "Select target path",
+    "globalPath": "Global",
+    "projectPath": "Project",
+    "customPath": "Custom",
+    "confirmCollect": "Confirm",
+    "commandCopied": "Command copied, paste in terminal to execute",
+    "cancel": "Cancel"
   },
   "zh-CN": {
     "title": "Claude 技能",
@@ -48,7 +56,15 @@ const i18n = {
     "summaryLanguage": "摘要语言",
     "autoOpen": "发现技能时自动打开侧边栏",
     "darkMode": "深色模式",
-    "getKeyAt": "获取密钥"
+    "getKeyAt": "获取密钥",
+    "collect": "采集",
+    "selectTargetPath": "选择目标路径",
+    "globalPath": "全局",
+    "projectPath": "项目",
+    "customPath": "自定义",
+    "confirmCollect": "确认",
+    "commandCopied": "命令已复制，请在终端中粘贴执行",
+    "cancel": "取消"
   },
   "zh-TW": {
     "title": "Claude 技能",
@@ -73,7 +89,15 @@ const i18n = {
     "summaryLanguage": "摘要語言",
     "autoOpen": "發現技能時自動開啟側邊欄",
     "darkMode": "深色模式",
-    "getKeyAt": "取得金鑰"
+    "getKeyAt": "取得金鑰",
+    "collect": "採集",
+    "selectTargetPath": "選擇目標路徑",
+    "globalPath": "全域",
+    "projectPath": "專案",
+    "customPath": "自訂",
+    "confirmCollect": "確認",
+    "commandCopied": "命令已複製，請在終端中貼上執行",
+    "cancel": "取消"
   },
   "ja": {
     "title": "Claude スキル",
@@ -98,7 +122,15 @@ const i18n = {
     "summaryLanguage": "要約言語",
     "autoOpen": "スキル検出時にサイドバーを自動で開く",
     "darkMode": "ダークモード",
-    "getKeyAt": "キーを取得"
+    "getKeyAt": "キーを取得",
+    "collect": "収集",
+    "selectTargetPath": "保存先を選択",
+    "globalPath": "グローバル",
+    "projectPath": "プロジェクト",
+    "customPath": "カスタム",
+    "confirmCollect": "確認",
+    "commandCopied": "コマンドをコピーしました。ターミナルで貼り付けて実行してください",
+    "cancel": "キャンセル"
   },
   "ko": {
     "title": "Claude 스킬",
@@ -123,7 +155,15 @@ const i18n = {
     "summaryLanguage": "요약 언어",
     "autoOpen": "스킬 발견 시 사이드바 자동 열기",
     "darkMode": "다크 모드",
-    "getKeyAt": "키 받기"
+    "getKeyAt": "키 받기",
+    "collect": "수집",
+    "selectTargetPath": "대상 경로 선택",
+    "globalPath": "전역",
+    "projectPath": "프로젝트",
+    "customPath": "사용자 지정",
+    "confirmCollect": "확인",
+    "commandCopied": "명령어가 복사되었습니다. 터미널에 붙여넣기하여 실행하세요",
+    "cancel": "취소"
   },
   "es": {
     "title": "Habilidades Claude",
@@ -148,7 +188,15 @@ const i18n = {
     "summaryLanguage": "Idioma de Resumen",
     "autoOpen": "Abrir barra lateral automaticamente al encontrar habilidades",
     "darkMode": "Modo oscuro",
-    "getKeyAt": "Obten tu clave en"
+    "getKeyAt": "Obten tu clave en",
+    "collect": "Recolectar",
+    "selectTargetPath": "Seleccionar ruta destino",
+    "globalPath": "Global",
+    "projectPath": "Proyecto",
+    "customPath": "Personalizado",
+    "confirmCollect": "Confirmar",
+    "commandCopied": "Comando copiado, pegalo en la terminal para ejecutar",
+    "cancel": "Cancelar"
   },
   "fr": {
     "title": "Competences Claude",
@@ -173,7 +221,15 @@ const i18n = {
     "summaryLanguage": "Langue du Resume",
     "autoOpen": "Ouvrir automatiquement la barre laterale quand des competences sont trouvees",
     "darkMode": "Mode sombre",
-    "getKeyAt": "Obtenez votre cle sur"
+    "getKeyAt": "Obtenez votre cle sur",
+    "collect": "Collecter",
+    "selectTargetPath": "Selectionner le chemin cible",
+    "globalPath": "Global",
+    "projectPath": "Projet",
+    "customPath": "Personnalise",
+    "confirmCollect": "Confirmer",
+    "commandCopied": "Commande copiee, collez-la dans le terminal pour executer",
+    "cancel": "Annuler"
   },
   "de": {
     "title": "Claude Fahigkeiten",
@@ -198,7 +254,15 @@ const i18n = {
     "summaryLanguage": "Zusammenfassungssprache",
     "autoOpen": "Seitenleiste automatisch offnen wenn Fahigkeiten gefunden werden",
     "darkMode": "Dunkler Modus",
-    "getKeyAt": "Holen Sie sich Ihren Schlussel bei"
+    "getKeyAt": "Holen Sie sich Ihren Schlussel bei",
+    "collect": "Sammeln",
+    "selectTargetPath": "Zielpfad auswahlen",
+    "globalPath": "Global",
+    "projectPath": "Projekt",
+    "customPath": "Benutzerdefiniert",
+    "confirmCollect": "Bestatigen",
+    "commandCopied": "Befehl kopiert, im Terminal einfugen um auszufuhren",
+    "cancel": "Abbrechen"
   }
 };
 
