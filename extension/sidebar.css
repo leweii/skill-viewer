@@ -433,11 +433,19 @@
 
 .sv-radio-label {
   flex: 1;
+  color: #24292f;
+  font-weight: 500;
+}
+
+.dark .sv-radio-label {
+  color: #c9d1d9;
 }
 
 .sv-radio-hint {
   font-size: 12px;
   color: #57606a;
+  font-weight: 400;
+  margin-left: 8px;
 }
 
 .dark .sv-radio-hint {

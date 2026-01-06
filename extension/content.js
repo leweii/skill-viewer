@@ -409,13 +409,13 @@
     const overlay = document.createElement('div');
     overlay.className = 'sv-modal-overlay';
 
-    // Check dark mode
-    chrome.storage.local.get(['darkMode'], (settings) => {
-      const isDark = settings.darkMode;
+    // Auto-detect GitHub dark mode from page
+    const isDark = document.documentElement.getAttribute('data-color-mode') === 'dark' ||
+                   document.documentElement.classList.contains('dark');
 
-      overlay.innerHTML = `
-        <div class="sv-modal ${isDark ? 'dark' : ''}">
-          <h3 class="sv-modal-title">Select target path</h3>
+    overlay.innerHTML = `
+      <div class="sv-modal ${isDark ? 'dark' : ''}">
+        <h3 class="sv-modal-title">Select target path</h3>
           <div class="sv-radio-group">
             <label class="sv-radio-option">
               <input type="radio" name="sv-path" value="global" checked>
@@ -496,7 +496,6 @@
         generateAndCopyCommand(skillName, skillPath, targetPath);
         overlay.remove();
       });
-    });
   }
 
   function generateAndCopyCommand(skillName, skillPath, targetPath) {
