@@ -273,16 +273,20 @@
   }
 
   async function renderSkills(skills, repoInfo, branch) {
+    // Store for collect feature
+    window.__skillViewerRepoInfo = { repoInfo, branch };
+
     const content = sidebarEl.querySelector('.sv-content');
 
     // Update header with count
     sidebarEl.querySelector('.sv-header h2').textContent = `Claude Skills (${skills.length})`;
 
     content.innerHTML = skills.map((skill, index) => `
-      <div class="sv-skill ${index >= 2 ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}">
+      <div class="sv-skill ${index >= 2 ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}">
         <div class="sv-skill-header">
           <span class="sv-chevron">▼</span>
           <span class="sv-skill-name">${escapeHtml(skill.name)}</span>
+          <button class="sv-collect-btn" data-skill="${escapeHtml(skill.name)}" data-path="${escapeHtml(skill.path)}">Collect</button>
         </div>
         <div class="sv-skill-body">
           <div class="sv-summarizing">
@@ -297,6 +301,16 @@
     content.querySelectorAll('.sv-skill-header').forEach(header => {
       header.addEventListener('click', () => {
         header.parentElement.classList.toggle('collapsed');
+      });
+    });
+
+    // Bind collect buttons
+    content.querySelectorAll('.sv-collect-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent triggering collapse
+        const skillName = btn.dataset.skill;
+        const skillPath = btn.dataset.path;
+        showCollectModal(skillName, skillPath);
       });
     });
 
@@ -380,11 +394,137 @@
     if (existing) existing.remove();
 
     const toast = document.createElement('div');
-    toast.className = `sv-toast ${isError ? 'error' : ''}`;
+    toast.className = `sv-toast ${isError ? 'error' : 'success'}`;
     toast.textContent = message;
     document.body.appendChild(toast);
 
     setTimeout(() => toast.remove(), 3000);
+  }
+
+  function showCollectModal(skillName, skillPath) {
+    // Remove existing modal
+    const existing = document.querySelector('.sv-modal-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'sv-modal-overlay';
+
+    // Auto-detect GitHub dark mode from page
+    const colorMode = document.documentElement.getAttribute('data-color-mode');
+    const isDark = colorMode === 'dark' ||
+                   colorMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches ||
+                   document.documentElement.getAttribute('data-dark-theme') ||
+                   document.body.classList.contains('dark') ||
+                   getComputedStyle(document.body).backgroundColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)?.slice(1).every(v => parseInt(v) < 50);
+
+    overlay.innerHTML = `
+      <div class="sv-modal ${isDark ? 'dark' : ''}">
+        <h3 class="sv-modal-title">Select target path</h3>
+        <p class="sv-modal-desc">Command will be copied to clipboard. Paste and run in terminal.</p>
+          <div class="sv-radio-group">
+            <label class="sv-radio-option">
+              <input type="radio" name="sv-path" value="global" checked>
+              <span class="sv-radio-label">
+                ~/.claude/skills/
+                <span class="sv-radio-hint">(Global)</span>
+              </span>
+            </label>
+            <label class="sv-radio-option">
+              <input type="radio" name="sv-path" value="project">
+              <span class="sv-radio-label">
+                ./.claude/skills/
+                <span class="sv-radio-hint">(Project)</span>
+              </span>
+            </label>
+            <label class="sv-radio-option">
+              <input type="radio" name="sv-path" value="custom">
+              <span class="sv-radio-label">Custom</span>
+            </label>
+            <div class="sv-custom-path">
+              <input type="text" placeholder="Enter custom path..." value="">
+            </div>
+          </div>
+          <div class="sv-modal-buttons">
+            <button class="sv-modal-btn cancel">Cancel</button>
+            <button class="sv-modal-btn primary confirm">Copy</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Handle radio change for custom path visibility
+      const radios = overlay.querySelectorAll('input[name="sv-path"]');
+      const customPathDiv = overlay.querySelector('.sv-custom-path');
+
+      radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          if (radio.value === 'custom' && radio.checked) {
+            customPathDiv.classList.add('visible');
+          } else {
+            customPathDiv.classList.remove('visible');
+          }
+        });
+      });
+
+      // Handle cancel
+      overlay.querySelector('.cancel').addEventListener('click', () => {
+        overlay.remove();
+      });
+
+      // Handle click outside modal
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.remove();
+        }
+      });
+
+      // Handle confirm
+      overlay.querySelector('.confirm').addEventListener('click', () => {
+        const selected = overlay.querySelector('input[name="sv-path"]:checked').value;
+        let targetPath;
+
+        if (selected === 'global') {
+          targetPath = '~/.claude/skills/';
+        } else if (selected === 'project') {
+          targetPath = './.claude/skills/';
+        } else {
+          targetPath = overlay.querySelector('.sv-custom-path input').value.trim();
+          if (!targetPath) {
+            targetPath = '~/.claude/skills/';
+          }
+          if (!targetPath.endsWith('/')) {
+            targetPath += '/';
+          }
+        }
+
+        generateAndCopyCommand(skillName, skillPath, targetPath);
+        overlay.remove();
+      });
+  }
+
+  function generateAndCopyCommand(skillName, skillPath, targetPath) {
+    const { repoInfo, branch } = window.__skillViewerRepoInfo || {};
+
+    if (!repoInfo) {
+      showToast('Error: Repository info not available', true);
+      return;
+    }
+
+    // Generate degit command
+    // Format: npx degit "owner/repo/path#branch" targetPath/skillName
+    // Quote the source path to prevent shell interpretation of #
+    const sourcePath = `${repoInfo.owner}/${repoInfo.repo}/${skillPath}#${branch}`;
+    const destPath = `${targetPath}${skillName}`;
+    const command = `npx degit "${sourcePath}" "${destPath}"`;
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(command).then(() => {
+      showToast('Command copied, paste in terminal to execute');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      showToast('Failed to copy command', true);
+    });
   }
 
   function escapeHtml(str) {
