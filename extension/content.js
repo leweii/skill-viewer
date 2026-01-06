@@ -273,16 +273,20 @@
   }
 
   async function renderSkills(skills, repoInfo, branch) {
+    // Store for collect feature
+    window.__skillViewerRepoInfo = { repoInfo, branch };
+
     const content = sidebarEl.querySelector('.sv-content');
 
     // Update header with count
     sidebarEl.querySelector('.sv-header h2').textContent = `Claude Skills (${skills.length})`;
 
     content.innerHTML = skills.map((skill, index) => `
-      <div class="sv-skill ${index >= 2 ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}">
+      <div class="sv-skill ${index >= 2 ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}">
         <div class="sv-skill-header">
           <span class="sv-chevron">▼</span>
           <span class="sv-skill-name">${escapeHtml(skill.name)}</span>
+          <button class="sv-collect-btn" data-skill="${escapeHtml(skill.name)}" data-path="${escapeHtml(skill.path)}">Collect</button>
         </div>
         <div class="sv-skill-body">
           <div class="sv-summarizing">
