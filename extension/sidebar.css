@@ -345,3 +345,165 @@
   height: 14px;
   margin-right: 8px;
 }
+
+/* Collect button */
+.sv-collect-btn {
+  background: #238636;
+  color: #ffffff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.sv-collect-btn:hover {
+  background: #2ea043;
+}
+
+.dark .sv-collect-btn {
+  background: #238636;
+}
+
+.dark .sv-collect-btn:hover {
+  background: #2ea043;
+}
+
+/* Path selection modal */
+.sv-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sv-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 320px;
+  max-width: 90vw;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.dark .sv-modal {
+  background: #161b22;
+  border: 1px solid #30363d;
+}
+
+.sv-modal-title {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Radio options */
+.sv-radio-group {
+  margin-bottom: 16px;
+}
+
+.sv-radio-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.sv-radio-option input[type="radio"] {
+  margin-right: 10px;
+}
+
+.sv-radio-label {
+  flex: 1;
+}
+
+.sv-radio-hint {
+  font-size: 12px;
+  color: #57606a;
+}
+
+.dark .sv-radio-hint {
+  color: #8b949e;
+}
+
+/* Custom path input */
+.sv-custom-path {
+  display: none;
+  margin-top: 8px;
+  margin-left: 24px;
+}
+
+.sv-custom-path.visible {
+  display: block;
+}
+
+.sv-custom-path input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #ffffff;
+  color: #24292f;
+}
+
+.dark .sv-custom-path input {
+  background: #0d1117;
+  border-color: #30363d;
+  color: #c9d1d9;
+}
+
+/* Modal buttons */
+.sv-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.sv-modal-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid #d0d7de;
+  background: #f6f8fa;
+  color: #24292f;
+}
+
+.sv-modal-btn:hover {
+  background: #eaeef2;
+}
+
+.dark .sv-modal-btn {
+  background: #21262d;
+  border-color: #30363d;
+  color: #c9d1d9;
+}
+
+.dark .sv-modal-btn:hover {
+  background: #30363d;
+}
+
+.sv-modal-btn.primary {
+  background: #238636;
+  border-color: #238636;
+  color: #ffffff;
+}
+
+.sv-modal-btn.primary:hover {
+  background: #2ea043;
+}
+
+/* Success toast */
+.sv-toast.success {
+  background: #238636;
+}
