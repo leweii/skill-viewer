@@ -508,8 +508,8 @@
     }
 
     // Generate degit command
-    // Format: npx degit owner/repo/path targetPath/skillName
-    const sourcePath = `${repoInfo.owner}/${repoInfo.repo}/${skillPath}`;
+    // Format: npx degit owner/repo/path#branch targetPath/skillName
+    const sourcePath = `${repoInfo.owner}/${repoInfo.repo}/${skillPath}#${branch}`;
     const destPath = `${targetPath}${skillName}`;
     const command = `npx degit ${sourcePath} ${destPath}`;
 
