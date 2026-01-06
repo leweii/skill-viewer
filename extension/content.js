@@ -410,8 +410,12 @@
     overlay.className = 'sv-modal-overlay';
 
     // Auto-detect GitHub dark mode from page
-    const isDark = document.documentElement.getAttribute('data-color-mode') === 'dark' ||
-                   document.documentElement.classList.contains('dark');
+    const colorMode = document.documentElement.getAttribute('data-color-mode');
+    const isDark = colorMode === 'dark' ||
+                   colorMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches ||
+                   document.documentElement.getAttribute('data-dark-theme') ||
+                   document.body.classList.contains('dark') ||
+                   getComputedStyle(document.body).backgroundColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)?.slice(1).every(v => parseInt(v) < 50);
 
     overlay.innerHTML = `
       <div class="sv-modal ${isDark ? 'dark' : ''}">
