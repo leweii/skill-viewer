@@ -372,7 +372,9 @@
   }
 
   function renderSummary(summaryText) {
-    const lines = summaryText.trim().split('\n');
+    // Sanitize HTML in input to prevent XSS (LLM output shouldn't contain HTML)
+    const sanitizedText = summaryText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const lines = sanitizedText.trim().split('\n');
     const firstLine = lines[0] || '';
 
     // Check if first line contains capability badges
@@ -398,7 +400,7 @@
       }
     } else {
       // No badges, render entire text as markdown
-      html += '<div class="sv-description">' + marked.parse(summaryText) + '</div>';
+      html += '<div class="sv-description">' + marked.parse(sanitizedText) + '</div>';
     }
 
     return html;
