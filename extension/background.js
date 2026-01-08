@@ -47,11 +47,20 @@ Skill content:
 ${skillContent}
 ---
 
-Provide a concise summary (2-3 sentences) that answers:
-1. What does this skill do?
-2. When should a developer use it?
+Analyze the skill and provide a summary in this exact format:
 
-Keep it practical and scannable. No markdown formatting.${langInstruction}`;
+**Line 1 - Capability badges (only include ones that apply, separated by " | "):**
+- ⚠️ Code Execution - if the skill runs bash commands, scripts, or executes code
+- ⚠️ External Access - if the skill calls external APIs, fetches URLs, or accesses network resources
+- 📁 File Operations - if the skill reads, writes, or modifies files
+
+**Line 2+ - Description (2-3 sentences):**
+What does this skill do and when should a developer use it? Keep it practical and scannable.
+
+Example output format:
+⚠️ Code Execution | 📁 File Operations
+
+Automates git commit workflows with AI-generated messages. Use when you want consistent, descriptive commits without writing messages manually.${langInstruction}`;
 }
 
 // Provider-specific summarize functions
@@ -67,7 +76,7 @@ async function summarizeWithGemini(apiKey, model, skillName, skillContent, summa
       }],
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 200
+        maxOutputTokens: 400
       }
     })
   });
@@ -100,7 +109,7 @@ async function summarizeWithOpenAI(apiKey, model, skillName, skillContent, summa
         content: buildPrompt(skillName, skillContent, summaryLanguage)
       }],
       temperature: 0.3,
-      max_tokens: 200
+      max_tokens: 400
     })
   });
 
@@ -129,7 +138,7 @@ async function summarizeWithClaude(apiKey, model, skillName, skillContent, summa
     },
     body: JSON.stringify({
       model: model,
-      max_tokens: 200,
+      max_tokens: 400,
       messages: [{
         role: 'user',
         content: buildPrompt(skillName, skillContent, summaryLanguage)
