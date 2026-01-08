@@ -535,3 +535,72 @@
 .sv-toast.success {
   background: #238636;
 }
+
+/* Capability badges */
+.sv-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sv-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sv-badge-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+
+.sv-badge-info {
+  background: #e7f1ff;
+  color: #0056b3;
+  border: 1px solid #b8daff;
+}
+
+/* Dark mode badges */
+#skill-viewer-sidebar.dark .sv-badge-warning {
+  background: #3d3200;
+  color: #ffc107;
+  border-color: #665200;
+}
+
+#skill-viewer-sidebar.dark .sv-badge-info {
+  background: #1a3a5c;
+  color: #6cb2ff;
+  border-color: #2d5a87;
+}
+
+/* Summary description markdown */
+.sv-description {
+  line-height: 1.5;
+}
+
+.sv-description p {
+  margin: 0 0 8px;
+}
+
+.sv-description p:last-child {
+  margin-bottom: 0;
+}
+
+.sv-description code {
+  background: #f1f1f1;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.sv-description strong {
+  font-weight: 600;
+}
+
+#skill-viewer-sidebar.dark .sv-description code {
+  background: #30363d;
+}
