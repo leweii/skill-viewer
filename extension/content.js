@@ -347,7 +347,7 @@
 
         if (summaryResponse.summary && !summaryResponse.fallback) {
           skillEl.innerHTML = `
-            <div class="sv-summary">${escapeHtml(summaryResponse.summary)}</div>
+            <div class="sv-summary">${renderSummary(summaryResponse.summary)}</div>
             <a href="${githubUrl}" target="_blank" class="sv-view-link">View Full Skill →</a>
           `;
         } else {
@@ -369,6 +369,39 @@
         `;
       }
     }
+  }
+
+  function renderSummary(summaryText) {
+    const lines = summaryText.trim().split('\n');
+    const firstLine = lines[0] || '';
+
+    // Check if first line contains capability badges
+    const hasBadges = firstLine.includes('⚠️') || firstLine.includes('📁');
+
+    let html = '';
+
+    if (hasBadges) {
+      // Parse badges from first line
+      const badges = firstLine.split('|').map(b => b.trim()).filter(b => b);
+      html += '<div class="sv-badges">';
+      for (const badge of badges) {
+        const isWarning = badge.includes('⚠️');
+        const className = isWarning ? 'sv-badge sv-badge-warning' : 'sv-badge sv-badge-info';
+        html += `<span class="${className}">${escapeHtml(badge)}</span>`;
+      }
+      html += '</div>';
+
+      // Rest is description
+      const description = lines.slice(1).join('\n').trim();
+      if (description) {
+        html += '<div class="sv-description">' + marked.parse(description) + '</div>';
+      }
+    } else {
+      // No badges, render entire text as markdown
+      html += '<div class="sv-description">' + marked.parse(summaryText) + '</div>';
+    }
+
+    return html;
   }
 
   function renderBasicMarkdown(text) {
