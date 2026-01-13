@@ -550,7 +550,8 @@
     // Format: npx degit "owner/repo/path#branch" targetPath/skillName
     // Quote the source path to prevent shell interpretation of #
     const sourcePath = `${repoInfo.owner}/${repoInfo.repo}/${skillPath}#${branch}`;
-    const destPath = `${targetPath}${skillName}`;
+    // Replace ~ with $HOME so tilde expansion works inside double quotes
+    const destPath = `${targetPath}${skillName}`.replace(/^~(?=\/|$)/, '$HOME');
     const command = `npx degit "${sourcePath}" "${destPath}"`;
 
     // Copy to clipboard
