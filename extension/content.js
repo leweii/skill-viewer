@@ -111,36 +111,60 @@
     const data = await response.json();
     const tree = data.tree || [];
 
-    // Find skills in .claude/skills/ or skills/
-    const skillPaths = ['.claude/skills/', 'skills/'];
+    // Find skills in .claude/skills/ or skills/ at any depth
+    // Patterns: starts with or contains /.claude/skills/ or /skills/
+    const skillPatterns = ['.claude/skills/', 'skills/'];
     const skillMap = new Map();
 
     for (const item of tree) {
       if (item.type !== 'blob') continue;
 
-      for (const prefix of skillPaths) {
-        if (!item.path.startsWith(prefix)) continue;
+      for (const pattern of skillPatterns) {
+        // Check if path starts with pattern or contains /pattern
+        let matchIndex = -1;
+        if (item.path.startsWith(pattern)) {
+          matchIndex = 0;
+        } else {
+          const nestedPattern = '/' + pattern;
+          const idx = item.path.indexOf(nestedPattern);
+          if (idx !== -1) {
+            matchIndex = idx + 1; // +1 to skip the leading /
+          }
+        }
 
-        const relativePath = item.path.slice(prefix.length);
+        if (matchIndex === -1) continue;
+
+        const prefixEnd = matchIndex + pattern.length;
+        const relativePath = item.path.slice(prefixEnd);
         const parts = relativePath.split('/');
 
         if (parts.length < 2) continue;
 
         const skillName = parts[0];
         const fileName = parts.slice(1).join('/');
+        const skillPath = item.path.slice(0, prefixEnd) + skillName;
 
-        if (!skillMap.has(skillName)) {
-          skillMap.set(skillName, {
-            name: skillName,
-            path: `${prefix}${skillName}`,
+        // Use full path as key to distinguish skills in different locations
+        const skillKey = skillPath;
+
+        if (!skillMap.has(skillKey)) {
+          // For display, include parent context if nested
+          const parentPath = item.path.slice(0, matchIndex);
+          const displayName = parentPath ? `${parentPath.replace(/\/$/, '')}/${skillName}` : skillName;
+
+          skillMap.set(skillKey, {
+            name: displayName,
+            path: skillPath,
             files: []
           });
         }
 
-        skillMap.get(skillName).files.push({
+        skillMap.get(skillKey).files.push({
           name: fileName,
           path: item.path
         });
+
+        break; // Don't double-match the same file
       }
     }
 
