@@ -50,7 +50,7 @@ ${skillContent}
 Analyze the skill and provide a summary in this exact format:
 
 **Line 1 - Capability badges (only include ones that apply, separated by " | "):**
-- ⚠️ Code Execution - if the skill runs bash commands, scripts, or executes code
+- ⚠️ Code Execution - ONLY if the skill contains actual executable code (bash commands, scripts, code blocks that will run). Do NOT include this badge just because the skill documentation mentions "code", "bash", or "command" in explanatory text.
 - ⚠️ External Access - if the skill calls external APIs, fetches URLs, or accesses network resources
 - 📁 File Operations - if the skill reads, writes, or modifies files
 
