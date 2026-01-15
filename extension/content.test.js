@@ -29,11 +29,23 @@ function parseSkillsFromTree(tree) {
       const relativePath = item.path.slice(prefixEnd);
       const parts = relativePath.split('/');
 
-      if (parts.length < 2) continue;
+      // Handle both single-file skills (.claude/skills/skill-name.md)
+      // and folder-based skills (.claude/skills/skill-name/SKILL.md)
+      let skillName, fileName, skillPath;
 
-      const skillName = parts[0];
-      const fileName = parts.slice(1).join('/');
-      const skillPath = item.path.slice(0, prefixEnd) + skillName;
+      if (parts.length === 1 && parts[0].endsWith('.md')) {
+        // Single-file skill: .claude/skills/my-skill.md
+        skillName = parts[0].replace(/\.md$/, '');
+        fileName = parts[0]; // The file itself is the skill definition
+        skillPath = item.path; // Full path to the file
+      } else if (parts.length >= 2) {
+        // Folder-based skill: .claude/skills/skill-name/SKILL.md
+        skillName = parts[0];
+        fileName = parts.slice(1).join('/');
+        skillPath = item.path.slice(0, prefixEnd) + skillName;
+      } else {
+        continue;
+      }
 
       const skillKey = skillPath;
 
@@ -140,13 +152,25 @@ test('detects multiple files in a skill directory', () => {
   assertEqual(skills[0].files[0].name, 'SKILL.md', 'SKILL.md should be sorted first');
 });
 
-test('ignores single files directly in skills/ (not in subdirectory)', () => {
+test('detects single-file skills directly in skills/', () => {
   const tree = [
     { type: 'blob', path: '.claude/skills/single-file.md' }
   ];
   const skills = parseSkillsFromTree(tree);
 
-  assertEqual(skills.length, 0, 'Should not detect single files');
+  assertEqual(skills.length, 1, 'Should detect single-file skill');
+  assertEqual(skills[0].name, 'single-file');
+  assertEqual(skills[0].path, '.claude/skills/single-file.md');
+  assertEqual(skills[0].files[0].name, 'single-file.md');
+});
+
+test('ignores non-md files directly in skills/', () => {
+  const tree = [
+    { type: 'blob', path: '.claude/skills/README.txt' }
+  ];
+  const skills = parseSkillsFromTree(tree);
+
+  assertEqual(skills.length, 0, 'Should not detect non-md files');
 });
 
 test('ignores tree entries (directories)', () => {

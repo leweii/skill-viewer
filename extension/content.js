@@ -138,11 +138,23 @@
         const relativePath = item.path.slice(prefixEnd);
         const parts = relativePath.split('/');
 
-        if (parts.length < 2) continue;
+        // Handle both single-file skills (.claude/skills/skill-name.md)
+        // and folder-based skills (.claude/skills/skill-name/SKILL.md)
+        let skillName, fileName, skillPath;
 
-        const skillName = parts[0];
-        const fileName = parts.slice(1).join('/');
-        const skillPath = item.path.slice(0, prefixEnd) + skillName;
+        if (parts.length === 1 && parts[0].endsWith('.md')) {
+          // Single-file skill: .claude/skills/my-skill.md
+          skillName = parts[0].replace(/\.md$/, '');
+          fileName = parts[0]; // The file itself is the skill definition
+          skillPath = item.path; // Full path to the file
+        } else if (parts.length >= 2) {
+          // Folder-based skill: .claude/skills/skill-name/SKILL.md
+          skillName = parts[0];
+          fileName = parts.slice(1).join('/');
+          skillPath = item.path.slice(0, prefixEnd) + skillName;
+        } else {
+          continue;
+        }
 
         // Use full path as key to distinguish skills in different locations
         const skillKey = skillPath;
@@ -340,7 +352,12 @@
 
     // Load content for each skill
     for (const skill of skills) {
-      const skillFile = skill.files.find(f => f.name === 'SKILL.md');
+      // Support both single-file skills (.claude/skills/skill-name.md)
+      // and folder-based skills (.claude/skills/skill-name/SKILL.md)
+      const isSingleFileSkill = skill.path.endsWith('.md');
+      const skillFile = isSingleFileSkill
+        ? skill.files[0]  // Single-file: the only file is the skill definition
+        : skill.files.find(f => f.name === 'SKILL.md');  // Folder-based: look for SKILL.md
       if (!skillFile) continue;
 
       const rawUrl = `https://raw.githubusercontent.com/${repoInfo.owner}/${repoInfo.repo}/${branch}/${skillFile.path}`;
