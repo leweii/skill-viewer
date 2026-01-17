@@ -19,6 +19,42 @@ const PROVIDERS = {
   }
 };
 
+// Cloud API configuration
+const CLOUD_API_URL = 'https://skill-viewer-api.vercel.app';
+
+async function getCloudAuth() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['cloudAuth'], (result) => {
+      resolve(result.cloudAuth || null);
+    });
+  });
+}
+
+async function cloudSummarize(repo, skillPath, skillName, skillContent, language) {
+  const auth = await getCloudAuth();
+
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth?.accessToken) {
+    headers['Authorization'] = `Bearer ${auth.accessToken}`;
+  }
+
+  const response = await fetch(`${CLOUD_API_URL}/api/summarize`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ repo, skillPath, skillName, skillContent, language })
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    if (response.status === 429) {
+      return { error: 'quota_exceeded', message: error.message };
+    }
+    throw new Error(error.error || `API error: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
 // Language names for prompts
 function getLanguageName(code) {
   const names = {
@@ -259,27 +295,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function handleSummarize(request) {
-  const { skillName, skillContent } = request;
+  const { skillName, skillContent, repo, skillPath } = request;
 
-  // Get settings from storage
   const settings = await chrome.storage.local.get([
     'llmProvider',
     'providers',
     'summaryLanguage',
-    // Legacy support
-    'geminiApiKey'
+    'cloudAuth',
+    'geminiApiKey'  // Legacy
   ]);
 
-  const provider = settings.llmProvider || 'gemini';
   const summaryLanguage = settings.summaryLanguage || 'en';
 
-  // Get API key - support both new and legacy storage
+  // 1. Try cloud service first
+  try {
+    const cloudResult = await cloudSummarize(repo, skillPath, skillName, skillContent, summaryLanguage);
+
+    if (cloudResult.error === 'quota_exceeded') {
+      // Fall through to local
+    } else if (cloudResult.summary) {
+      return { summary: cloudResult.summary, cached: cloudResult.cached, source: 'cloud' };
+    }
+  } catch (err) {
+    console.log('Cloud API failed, trying local:', err.message);
+  }
+
+  // 2. Fallback to local API key
+  const provider = settings.llmProvider || 'gemini';
+
   let apiKey, model;
   if (settings.providers?.[provider]) {
     apiKey = settings.providers[provider].apiKey;
     model = settings.providers[provider].model || PROVIDERS[provider].defaultModel;
   } else if (provider === 'gemini' && settings.geminiApiKey) {
-    // Legacy support
     apiKey = settings.geminiApiKey;
     model = PROVIDERS.gemini.defaultModel;
   }
@@ -288,30 +336,26 @@ async function handleSummarize(request) {
     return { error: 'No API key configured', fallback: true };
   }
 
-  // Check cache first
-  const cacheKey = `summary_${request.repo}_${skillName}_${summaryLanguage}`;
+  // Check local cache
+  const cacheKey = `summary_${repo}_${skillName}_${summaryLanguage}`;
   const cached = await chrome.storage.local.get(cacheKey);
 
   if (cached[cacheKey]?.summary) {
     const age = Date.now() - cached[cacheKey].timestamp;
     const ONE_DAY = 24 * 60 * 60 * 1000;
     if (age < ONE_DAY) {
-      return { summary: cached[cacheKey].summary, cached: true };
+      return { summary: cached[cacheKey].summary, cached: true, source: 'local' };
     }
   }
 
   try {
     const summary = await summarizeSkill(provider, apiKey, model, skillName, skillContent, summaryLanguage);
 
-    // Cache the result
     await chrome.storage.local.set({
-      [cacheKey]: {
-        summary,
-        timestamp: Date.now()
-      }
+      [cacheKey]: { summary, timestamp: Date.now() }
     });
 
-    return { summary };
+    return { summary, source: 'local' };
   } catch (err) {
     return { error: err.message, fallback: true };
   }
