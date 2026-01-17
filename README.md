@@ -22,7 +22,8 @@
 
 - **Auto-Detection** - Automatically finds Claude skills in `.claude/skills/` or `skills/` directories
 - **AI Summaries** - Get concise 2-3 sentence summaries of what each skill does
-- **Multi-Provider LLM** - Choose between Gemini, OpenAI, or Claude for summaries
+- **Cloud Service** - Use our cloud API for summaries without needing your own API keys
+- **Multi-Provider LLM** - Or use your own Gemini, OpenAI, or Claude API keys
 - **Draggable Sidebar** - Resize the sidebar width (250-600px) to your preference
 - **8 Languages** - UI and summaries available in English, 简体中文, 繁體中文, 日本語, 한국어, Español, Français, Deutsch
 - **Dark Mode** - Matches your preference
@@ -68,6 +69,34 @@ Choose your preferred LLM provider:
 - Auto-open sidebar when skills are found
 - Dark mode
 
+## Cloud Service
+
+Skill Viewer offers a cloud service for AI-powered summaries without needing your own API keys.
+
+### Plans
+
+| Plan | Daily Limit | Price |
+|------|-------------|-------|
+| Free | 5 summaries | $0 |
+| Pro | 50 summaries | $9.99 (one-time) |
+
+- Cache hits don't count against your quota
+- Summaries are cached for 7 days per language
+- Pro access is lifetime with daily limits
+
+### How It Works
+
+1. **Login** with GitHub or Google in the Settings page
+2. **Use** the extension normally - cloud summaries are automatic
+3. **Upgrade** to Pro if you need more daily summaries
+
+### Fallback
+
+If you've configured your own API keys, the extension will automatically fall back to them when:
+- You're not logged in to the cloud service
+- Your daily quota is exceeded
+- The cloud service is unavailable
+
 ## Supported Languages
 
 | Language | UI | Summaries |
@@ -83,9 +112,10 @@ Choose your preferred LLM provider:
 
 ## Privacy
 
-- **No data collection** - We don't collect any user data
-- **Local storage only** - API keys and settings stored in your browser
-- **Direct API calls** - Communicates only with GitHub and your chosen LLM provider
+- **Local storage** - API keys and settings stored in your browser
+- **Cloud service** - If you use our cloud service, skill content is sent to our servers for summarization
+- **No tracking** - We don't track your browsing or collect personal data
+- **Usage stats** - We track anonymized view/collect counts for popular skills
 
 ## Development
 
