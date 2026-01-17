@@ -13,7 +13,8 @@
     "https://raw.githubusercontent.com/*",
     "https://generativelanguage.googleapis.com/*",
     "https://api.openai.com/*",
-    "https://api.anthropic.com/*"
+    "https://api.anthropic.com/*",
+    "https://skill-viewer-api.vercel.app/*"
   ],
   "background": {
     "service_worker": "background.js"
