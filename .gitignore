@@ -2,3 +2,6 @@
 *.zip
 extension/screenshots/
 .worktrees/
+node_modules/
+.env
+.vercel/

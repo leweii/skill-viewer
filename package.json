@@ -1,0 +1,16 @@
+{
+  "name": "skill-viewer-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "test": "node --test api/**/*.test.js lib/**/*.test.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}
