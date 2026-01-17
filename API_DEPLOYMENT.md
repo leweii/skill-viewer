@@ -4,7 +4,7 @@
 
 1. Vercel account (https://vercel.com)
 2. Supabase project (https://supabase.com)
-3. LemonSqueezy account (https://lemonsqueezy.com)
+3. Stripe account (https://stripe.com)
 4. Gemini API key (https://ai.google.dev)
 
 ## Supabase Setup
@@ -22,14 +22,25 @@
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_KEY`
    - `GEMINI_API_KEY`
-   - `LEMONSQUEEZY_WEBHOOK_SECRET`
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_WEBHOOK_SECRET`
+   - `STRIPE_PRICE_ID`
 4. Deploy
 
-## LemonSqueezy Setup
+## Stripe Setup
 
-1. Create a product for "Skill Viewer Pro"
-2. Set up webhook pointing to `https://your-vercel-app.vercel.app/api/webhook/lemonsqueezy`
-3. Configure webhook secret in Vercel environment variables
+1. Create a Stripe account at https://stripe.com
+2. Create a product "Skill Viewer Pro" with one-time payment ($9.99)
+3. Enable payment methods in Dashboard → Settings → Payment methods:
+   - Cards (enabled by default)
+   - Alipay
+   - WeChat Pay
+4. Create webhook endpoint:
+   - URL: `https://your-vercel-app.vercel.app/api/webhook/stripe`
+   - Events: `checkout.session.completed`
+5. Copy the webhook signing secret
+
+Note: Alipay and WeChat Pay require account activation and may need business verification.
 
 ## Extension Configuration
 
