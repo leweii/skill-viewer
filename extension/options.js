@@ -72,12 +72,51 @@ document.getElementById('logout-btn')?.addEventListener('click', async () => {
   showLoggedOutState();
 });
 
-document.getElementById('upgrade-btn')?.addEventListener('click', () => {
-  window.open('https://YOUR_LEMONSQUEEZY_URL', '_blank');
+document.getElementById('upgrade-btn')?.addEventListener('click', async () => {
+  const auth = await chrome.storage.local.get('cloudAuth');
+  if (!auth.cloudAuth?.accessToken) {
+    alert('Please login first to upgrade');
+    return;
+  }
+
+  try {
+    const response = await fetch('https://skill-viewer-api.vercel.app/api/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${auth.cloudAuth.accessToken}`
+      },
+      body: JSON.stringify({
+        successUrl: chrome.runtime.getURL('options.html?upgraded=true'),
+        cancelUrl: chrome.runtime.getURL('options.html?cancelled=true')
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create checkout session');
+    }
+
+    const { checkoutUrl } = await response.json();
+    window.open(checkoutUrl, '_blank');
+  } catch (error) {
+    console.error('Upgrade error:', error);
+    alert('Failed to start checkout. Please try again.');
+  }
 });
 
 // Initialize cloud UI
 initCloudUI();
+
+// Handle post-payment URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('upgraded') === 'true') {
+  initCloudUI();
+  alert('Payment successful! You are now a Pro user.');
+  window.history.replaceState({}, document.title, window.location.pathname);
+} else if (urlParams.get('cancelled') === 'true') {
+  alert('Payment was cancelled.');
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
 
 // i18n translations (inline for options page)
 const i18n = {
