@@ -587,6 +587,16 @@
       return;
     }
 
+    // Track collect event
+    fetch('https://skill-viewer-api.vercel.app/api/collect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        repo: repoInfo.full,
+        skillPath: skillPath
+      })
+    }).catch(() => {}); // Fire and forget
+
     // Generate degit command
     // Format: npx degit "owner/repo/path#branch" targetPath/skillName
     // Quote the source path to prevent shell interpretation of #
