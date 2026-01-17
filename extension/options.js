@@ -80,7 +80,7 @@ document.getElementById('upgrade-btn')?.addEventListener('click', async () => {
   }
 
   try {
-    const response = await fetch('https://skill-viewer-api.vercel.app/api/create-checkout', {
+    const response = await fetch(`${CLOUD_API_URL}/api/create-checkout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
