@@ -31,7 +31,16 @@ const i18n = {
     "customPath": "Custom",
     "confirmCollect": "Confirm",
     "commandCopied": "Command copied, paste in terminal to execute",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "cloudService": "Cloud Service",
+    "cloudLoginPrompt": "Login to use cloud summarization",
+    "loginWithGithub": "Login with GitHub",
+    "loginWithGoogle": "Login with Google",
+    "loggedInAs": "Logged in as",
+    "upgradeToPro": "Upgrade to Pro",
+    "logout": "Logout",
+    "remainingToday": "remaining today",
+    "quotaExceeded": "Daily limit reached"
   },
   "zh-CN": {
     "title": "Claude 技能",
@@ -64,7 +73,16 @@ const i18n = {
     "customPath": "自定义",
     "confirmCollect": "确认",
     "commandCopied": "命令已复制，请在终端中粘贴执行",
-    "cancel": "取消"
+    "cancel": "取消",
+    "cloudService": "云服务",
+    "cloudLoginPrompt": "登录以使用云端摘要",
+    "loginWithGithub": "使用 GitHub 登录",
+    "loginWithGoogle": "使用 Google 登录",
+    "loggedInAs": "已登录为",
+    "upgradeToPro": "升级到专业版",
+    "logout": "退出登录",
+    "remainingToday": "今日剩余",
+    "quotaExceeded": "已达每日上限"
   },
   "zh-TW": {
     "title": "Claude 技能",
@@ -97,7 +115,16 @@ const i18n = {
     "customPath": "自訂",
     "confirmCollect": "確認",
     "commandCopied": "命令已複製，請在終端中貼上執行",
-    "cancel": "取消"
+    "cancel": "取消",
+    "cloudService": "雲端服務",
+    "cloudLoginPrompt": "登入以使用雲端摘要",
+    "loginWithGithub": "使用 GitHub 登入",
+    "loginWithGoogle": "使用 Google 登入",
+    "loggedInAs": "已登入為",
+    "upgradeToPro": "升級到專業版",
+    "logout": "登出",
+    "remainingToday": "今日剩餘",
+    "quotaExceeded": "已達每日上限"
   },
   "ja": {
     "title": "Claude スキル",
@@ -130,7 +157,16 @@ const i18n = {
     "customPath": "カスタム",
     "confirmCollect": "確認",
     "commandCopied": "コマンドをコピーしました。ターミナルで貼り付けて実行してください",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "cloudService": "クラウドサービス",
+    "cloudLoginPrompt": "ログインしてクラウド要約を使用",
+    "loginWithGithub": "GitHubでログイン",
+    "loginWithGoogle": "Googleでログイン",
+    "loggedInAs": "ログイン中:",
+    "upgradeToPro": "Proにアップグレード",
+    "logout": "ログアウト",
+    "remainingToday": "本日残り",
+    "quotaExceeded": "1日の上限に達しました"
   },
   "ko": {
     "title": "Claude 스킬",
@@ -163,7 +199,16 @@ const i18n = {
     "customPath": "사용자 지정",
     "confirmCollect": "확인",
     "commandCopied": "명령어가 복사되었습니다. 터미널에 붙여넣기하여 실행하세요",
-    "cancel": "취소"
+    "cancel": "취소",
+    "cloudService": "클라우드 서비스",
+    "cloudLoginPrompt": "로그인하여 클라우드 요약 사용",
+    "loginWithGithub": "GitHub로 로그인",
+    "loginWithGoogle": "Google로 로그인",
+    "loggedInAs": "로그인됨:",
+    "upgradeToPro": "Pro로 업그레이드",
+    "logout": "로그아웃",
+    "remainingToday": "오늘 남은 횟수",
+    "quotaExceeded": "일일 한도 도달"
   },
   "es": {
     "title": "Habilidades Claude",
@@ -196,7 +241,16 @@ const i18n = {
     "customPath": "Personalizado",
     "confirmCollect": "Confirmar",
     "commandCopied": "Comando copiado, pegalo en la terminal para ejecutar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "cloudService": "Servicio en la nube",
+    "cloudLoginPrompt": "Inicia sesión para usar resúmenes en la nube",
+    "loginWithGithub": "Iniciar sesión con GitHub",
+    "loginWithGoogle": "Iniciar sesión con Google",
+    "loggedInAs": "Conectado como",
+    "upgradeToPro": "Actualizar a Pro",
+    "logout": "Cerrar sesión",
+    "remainingToday": "restantes hoy",
+    "quotaExceeded": "Límite diario alcanzado"
   },
   "fr": {
     "title": "Competences Claude",
@@ -229,7 +283,16 @@ const i18n = {
     "customPath": "Personnalise",
     "confirmCollect": "Confirmer",
     "commandCopied": "Commande copiee, collez-la dans le terminal pour executer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "cloudService": "Service cloud",
+    "cloudLoginPrompt": "Connectez-vous pour utiliser le résumé cloud",
+    "loginWithGithub": "Se connecter avec GitHub",
+    "loginWithGoogle": "Se connecter avec Google",
+    "loggedInAs": "Connecté en tant que",
+    "upgradeToPro": "Passer à Pro",
+    "logout": "Se déconnecter",
+    "remainingToday": "restantes aujourd'hui",
+    "quotaExceeded": "Limite quotidienne atteinte"
   },
   "de": {
     "title": "Claude Fahigkeiten",
@@ -262,7 +325,16 @@ const i18n = {
     "customPath": "Benutzerdefiniert",
     "confirmCollect": "Bestatigen",
     "commandCopied": "Befehl kopiert, im Terminal einfugen um auszufuhren",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "cloudService": "Cloud-Dienst",
+    "cloudLoginPrompt": "Anmelden für Cloud-Zusammenfassung",
+    "loginWithGithub": "Mit GitHub anmelden",
+    "loginWithGoogle": "Mit Google anmelden",
+    "loggedInAs": "Angemeldet als",
+    "upgradeToPro": "Auf Pro upgraden",
+    "logout": "Abmelden",
+    "remainingToday": "heute verbleibend",
+    "quotaExceeded": "Tageslimit erreicht"
   }
 };
 
