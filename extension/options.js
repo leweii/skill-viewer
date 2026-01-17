@@ -19,6 +19,66 @@ const PROVIDERS = {
   }
 };
 
+// Cloud service configuration
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const CLOUD_API_URL = 'https://skill-viewer-api.vercel.app';
+
+async function initCloudUI() {
+  const { cloudAuth } = await chrome.storage.local.get(['cloudAuth']);
+
+  if (cloudAuth?.user) {
+    showLoggedInState(cloudAuth);
+    fetchUsage(cloudAuth.accessToken);
+  } else {
+    showLoggedOutState();
+  }
+}
+
+function showLoggedOutState() {
+  document.getElementById('cloud-logged-out').style.display = 'block';
+  document.getElementById('cloud-logged-in').style.display = 'none';
+}
+
+function showLoggedInState(auth) {
+  document.getElementById('cloud-logged-out').style.display = 'none';
+  document.getElementById('cloud-logged-in').style.display = 'block';
+  document.getElementById('cloud-user-info').textContent = `Logged in as ${auth.user.email}`;
+}
+
+async function fetchUsage(token) {
+  try {
+    const response = await fetch(`${CLOUD_API_URL}/api/usage`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+
+    const remaining = data.dailyLimit - data.dailyUsage;
+    const status = data.isPaid ? 'Pro' : 'Free';
+    document.getElementById('cloud-usage-info').textContent =
+      `${status}: ${remaining}/${data.dailyLimit} remaining today`;
+
+    if (!data.isPaid) {
+      document.getElementById('upgrade-btn').style.display = 'inline-block';
+    }
+  } catch (err) {
+    console.error('Failed to fetch usage:', err);
+  }
+}
+
+// Add event listeners for cloud service
+document.getElementById('logout-btn')?.addEventListener('click', async () => {
+  await chrome.storage.local.remove(['cloudAuth']);
+  showLoggedOutState();
+});
+
+document.getElementById('upgrade-btn')?.addEventListener('click', () => {
+  window.open('https://YOUR_LEMONSQUEEZY_URL', '_blank');
+});
+
+// Initialize cloud UI
+initCloudUI();
+
 // i18n translations (inline for options page)
 const i18n = {
   "en": {

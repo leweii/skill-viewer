@@ -215,11 +215,61 @@
     .footer a {
       color: var(--accent-color);
     }
+
+    .cloud-status {
+      background: var(--bg-secondary);
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    .cloud-state p {
+      margin: 0 0 12px 0;
+    }
+
+    .cloud-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--text-secondary);
+      color: white;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1 id="title">Skill Viewer Settings</h1>
+
+    <!-- Cloud Service Section -->
+    <div class="section">
+      <h2 id="cloud-title">Cloud Service</h2>
+      <div id="cloud-status" class="cloud-status">
+        <div id="cloud-logged-out" class="cloud-state">
+          <p id="cloud-login-prompt">Login to use cloud summarization</p>
+          <div class="cloud-buttons">
+            <button id="login-github" class="btn btn-secondary">Login with GitHub</button>
+            <button id="login-google" class="btn btn-secondary">Login with Google</button>
+          </div>
+        </div>
+        <div id="cloud-logged-in" class="cloud-state" style="display: none;">
+          <p id="cloud-user-info"></p>
+          <p id="cloud-usage-info"></p>
+          <div class="cloud-buttons">
+            <button id="upgrade-btn" class="btn btn-primary" style="display: none;">Upgrade to Pro</button>
+            <button id="logout-btn" class="btn btn-secondary">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
 
     <div class="section">
       <div class="section-title" id="section-provider">AI Provider</div>
