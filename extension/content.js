@@ -381,6 +381,7 @@
           type: 'SUMMARIZE_SKILL',
           repo: repoInfo.full,
           skillName: skill.name,
+          skillPath: skill.path,
           skillContent
         });
 
