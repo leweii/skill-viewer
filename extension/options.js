@@ -72,51 +72,96 @@ document.getElementById('logout-btn')?.addEventListener('click', async () => {
   showLoggedOutState();
 });
 
-document.getElementById('upgrade-btn')?.addEventListener('click', async () => {
+// Payment modal handling
+let pollingInterval = null;
+
+document.getElementById('upgrade-btn')?.addEventListener('click', () => {
+  const modal = document.getElementById('payment-modal');
+  modal.style.display = 'flex';
+  document.getElementById('payment-methods').style.display = 'block';
+  document.getElementById('qrcode-container').style.display = 'none';
+});
+
+document.getElementById('cancel-payment')?.addEventListener('click', () => {
+  document.getElementById('payment-modal').style.display = 'none';
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+});
+
+async function handlePayment(method) {
   const auth = await chrome.storage.local.get('cloudAuth');
   if (!auth.cloudAuth?.accessToken) {
-    alert('Please login first to upgrade');
+    alert('请先登录');
     return;
   }
 
   try {
-    const response = await fetch(`${CLOUD_API_URL}/api/create-checkout`, {
+    const response = await fetch(`${CLOUD_API_URL}/api/create-qrcode`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${auth.cloudAuth.accessToken}`
       },
-      body: JSON.stringify({
-        successUrl: chrome.runtime.getURL('options.html?upgraded=true'),
-        cancelUrl: chrome.runtime.getURL('options.html?cancelled=true')
-      })
+      body: JSON.stringify({ paymentMethod: method })
     });
 
     if (!response.ok) {
-      throw new Error('Failed to create checkout session');
+      throw new Error('Failed to create QR code');
     }
 
-    const { checkoutUrl } = await response.json();
-    window.open(checkoutUrl, '_blank');
+    const { qrCodeUrl } = await response.json();
+
+    // 显示二维码
+    document.getElementById('payment-methods').style.display = 'none';
+    document.getElementById('qrcode-container').style.display = 'block';
+    document.getElementById('qrcode-hint').textContent =
+      method === 'alipay' ? '请使用支付宝扫码支付' : '请使用微信扫码支付';
+
+    const qrcodeCanvas = document.getElementById('qrcode');
+    QRCode.toCanvas(qrcodeCanvas, qrCodeUrl, { width: 200 }, (error) => {
+      if (error) console.error(error);
+    });
+
+    // 开始轮询订单状态
+    startPolling(auth.cloudAuth.accessToken);
   } catch (error) {
-    console.error('Upgrade error:', error);
-    alert('Failed to start checkout. Please try again.');
+    console.error('Payment error:', error);
+    alert('创建支付订单失败，请重试');
   }
-});
+}
+
+function startPolling(token) {
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+  }
+
+  pollingInterval = setInterval(async () => {
+    try {
+      const response = await fetch(`${CLOUD_API_URL}/api/check-order`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const { status } = await response.json();
+
+      if (status === 'paid') {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        document.getElementById('payment-modal').style.display = 'none';
+        alert('支付成功！您已升级为 Pro 用户');
+        initCloudUI();
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+    }
+  }, 2000);
+}
+
+document.getElementById('pay-alipay')?.addEventListener('click', () => handlePayment('alipay'));
+document.getElementById('pay-wechat')?.addEventListener('click', () => handlePayment('wechat'));
 
 // Initialize cloud UI
 initCloudUI();
-
-// Handle post-payment URL parameters
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('upgraded') === 'true') {
-  initCloudUI();
-  alert('Payment successful! You are now a Pro user.');
-  window.history.replaceState({}, document.title, window.location.pathname);
-} else if (urlParams.get('cancelled') === 'true') {
-  alert('Payment was cancelled.');
-  window.history.replaceState({}, document.title, window.location.pathname);
-}
 
 // i18n translations (inline for options page)
 const i18n = {

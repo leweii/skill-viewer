@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Skill Viewer Settings</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     :root {
       --bg-primary: #ffffff;
@@ -241,6 +242,113 @@
       background: var(--text-secondary);
       color: white;
     }
+
+    /* Payment Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .payment-modal-content {
+      background: var(--bg-primary);
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      min-width: 320px;
+      max-width: 400px;
+    }
+
+    .payment-modal-content h3 {
+      margin: 0 0 20px 0;
+      color: var(--text-primary);
+    }
+
+    .payment-methods p {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+    }
+
+    .payment-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .payment-btn {
+      padding: 16px 32px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-primary);
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+      color: var(--text-primary);
+    }
+
+    .payment-btn:hover {
+      border-color: var(--text-secondary);
+    }
+
+    .alipay-btn:hover {
+      border-color: #1677ff;
+      color: #1677ff;
+    }
+
+    .wechat-btn:hover {
+      border-color: #07c160;
+      color: #07c160;
+    }
+
+    .qrcode-container {
+      padding: 20px;
+    }
+
+    #qrcode {
+      display: inline-block;
+      padding: 16px;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    #qrcode-hint {
+      margin-top: 12px;
+      color: var(--text-secondary);
+    }
+
+    .payment-waiting {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    .modal .btn-secondary {
+      margin-top: 16px;
+      padding: 8px 24px;
+    }
+
+    .dark-mode .payment-modal-content {
+      background: var(--bg-primary);
+    }
+
+    .dark-mode .payment-btn {
+      background: var(--bg-secondary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .dark-mode #qrcode {
+      background: white;
+    }
   </style>
 </head>
 <body>
@@ -351,6 +459,33 @@
     <div class="footer">
       Skill Viewer v1.4.0 |
       <a href="https://github.com/anthropics/claude-code" target="_blank">Claude Code</a>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="payment-modal" class="modal" style="display: none;">
+    <div class="payment-modal-content">
+      <h3 id="payment-title">升级到 Pro - ¥39.9</h3>
+
+      <div id="payment-methods" class="payment-methods">
+        <p>选择支付方式：</p>
+        <div class="payment-buttons">
+          <button id="pay-alipay" class="payment-btn alipay-btn">
+            <span>支付宝</span>
+          </button>
+          <button id="pay-wechat" class="payment-btn wechat-btn">
+            <span>微信支付</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="qrcode-container" class="qrcode-container" style="display: none;">
+        <canvas id="qrcode"></canvas>
+        <p id="qrcode-hint">请使用支付宝扫码支付</p>
+        <p class="payment-waiting">支付完成后请等待页面自动刷新...</p>
+      </div>
+
+      <button id="cancel-payment" class="btn-secondary">取消</button>
     </div>
   </div>
 
