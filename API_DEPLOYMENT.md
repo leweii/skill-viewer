@@ -4,8 +4,9 @@
 
 1. Vercel account (https://vercel.com)
 2. Supabase project (https://supabase.com)
-3. Stripe account (https://stripe.com)
-4. Gemini API key (https://ai.google.dev)
+3. Alipay merchant account (https://open.alipay.com)
+4. WeChat Pay merchant account (https://pay.weixin.qq.com)
+5. Gemini API key (https://ai.google.dev)
 
 ## Supabase Setup
 
@@ -13,6 +14,28 @@
 2. Run the migration script in SQL Editor: `scripts/setup-db.sql`
 3. Enable GitHub and Google OAuth providers in Authentication settings
 4. Copy your project URL and service key
+
+## Alipay Setup
+
+1. Register at https://open.alipay.com
+2. Create an application and enable "当面付" (Face-to-face payment)
+3. Generate RSA2 key pair in the developer console
+4. Download the Alipay public key
+5. Required credentials:
+   - `ALIPAY_APP_ID` - Application ID
+   - `ALIPAY_PRIVATE_KEY` - Your RSA2 private key
+   - `ALIPAY_PUBLIC_KEY` - Alipay's public key
+6. Set notify URL to: `https://your-vercel-app.vercel.app/api/webhook/alipay`
+
+## WeChat Pay Setup
+
+1. Register at https://pay.weixin.qq.com
+2. Apply for Native Payment capability
+3. Required credentials:
+   - `WECHAT_APP_ID` - Official Account App ID
+   - `WECHAT_MCH_ID` - Merchant ID
+   - `WECHAT_API_KEY` - API key (32 characters)
+4. Set notify URL to: `https://your-vercel-app.vercel.app/api/webhook/wechat`
 
 ## Vercel Deployment
 
@@ -22,25 +45,14 @@
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_KEY`
    - `GEMINI_API_KEY`
-   - `STRIPE_SECRET_KEY`
-   - `STRIPE_WEBHOOK_SECRET`
-   - `STRIPE_PRICE_ID`
+   - `ALIPAY_APP_ID`
+   - `ALIPAY_PRIVATE_KEY`
+   - `ALIPAY_PUBLIC_KEY`
+   - `WECHAT_APP_ID`
+   - `WECHAT_MCH_ID`
+   - `WECHAT_API_KEY`
+   - `PAYMENT_AMOUNT` (default: 39.9)
 4. Deploy
-
-## Stripe Setup
-
-1. Create a Stripe account at https://stripe.com
-2. Create a product "Skill Viewer Pro" with one-time payment ($9.99)
-3. Enable payment methods in Dashboard → Settings → Payment methods:
-   - Cards (enabled by default)
-   - Alipay
-   - WeChat Pay
-4. Create webhook endpoint:
-   - URL: `https://your-vercel-app.vercel.app/api/webhook/stripe`
-   - Events: `checkout.session.completed`
-5. Copy the webhook signing secret
-
-Note: Alipay and WeChat Pay require account activation and may need business verification.
 
 ## Extension Configuration
 
