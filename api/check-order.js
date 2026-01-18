@@ -1,5 +1,5 @@
 // api/check-order.js
-import { verifyToken, getSupabase } from '../lib/supabase.js';
+import { getSupabase, verifyToken } from '../lib/supabase.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,25 +16,37 @@ export default async function handler(req, res) {
 
   try {
     const user = await verifyToken(req.headers.authorization);
+
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    // 检查用户是否已付费
     const supabase = getSupabase();
+
+    // 查询用户支付状态
     const { data: userData, error } = await supabase
       .from('users')
-      .select('is_paid')
+      .select('is_paid, paid_at')
       .eq('id', user.id)
       .single();
 
     if (error) {
-      return res.status(500).json({ error: 'Failed to check status' });
+      console.error('Failed to get user status:', error);
+      return res.status(500).json({ error: 'Database error' });
     }
 
-    return res.status(200).json({
-      status: userData?.is_paid ? 'paid' : 'pending'
-    });
+    if (!userData) {
+      return res.status(200).json({ status: 'pending' });
+    }
+
+    if (userData.is_paid) {
+      return res.status(200).json({
+        status: 'paid',
+        paidAt: userData.paid_at
+      });
+    }
+
+    return res.status(200).json({ status: 'pending' });
   } catch (error) {
     console.error('Check order error:', error);
     return res.status(500).json({ error: error.message });
