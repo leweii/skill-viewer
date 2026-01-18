@@ -40,7 +40,17 @@ const i18n = {
     "upgradeToPro": "Upgrade to Pro",
     "logout": "Logout",
     "remainingToday": "remaining today",
-    "quotaExceeded": "Daily limit reached"
+    "quotaExceeded": "Daily limit reached",
+    "paymentTitle": "Upgrade to Pro - ¥39.9",
+    "selectPaymentMethod": "Select payment method:",
+    "alipay": "Alipay",
+    "wechatPay": "WeChat Pay",
+    "scanWithAlipay": "Scan with Alipay to pay",
+    "scanWithWechat": "Scan with WeChat to pay",
+    "waitingForPayment": "Waiting for payment...",
+    "paymentSuccess": "Payment successful! You are now a Pro user",
+    "paymentFailed": "Failed to create payment. Please try again.",
+    "pleaseLoginFirst": "Please login first"
   },
   "zh-CN": {
     "title": "Claude 技能",
@@ -82,7 +92,17 @@ const i18n = {
     "upgradeToPro": "升级到专业版",
     "logout": "退出登录",
     "remainingToday": "今日剩余",
-    "quotaExceeded": "已达每日上限"
+    "quotaExceeded": "已达每日上限",
+    "paymentTitle": "升级到 Pro - ¥39.9",
+    "selectPaymentMethod": "选择支付方式：",
+    "alipay": "支付宝",
+    "wechatPay": "微信支付",
+    "scanWithAlipay": "请使用支付宝扫码支付",
+    "scanWithWechat": "请使用微信扫码支付",
+    "waitingForPayment": "支付完成后请等待页面自动刷新...",
+    "paymentSuccess": "支付成功！您已升级为 Pro 用户",
+    "paymentFailed": "创建支付订单失败，请重试",
+    "pleaseLoginFirst": "请先登录"
   },
   "zh-TW": {
     "title": "Claude 技能",
@@ -124,7 +144,17 @@ const i18n = {
     "upgradeToPro": "升級到專業版",
     "logout": "登出",
     "remainingToday": "今日剩餘",
-    "quotaExceeded": "已達每日上限"
+    "quotaExceeded": "已達每日上限",
+    "paymentTitle": "升級到 Pro - ¥39.9",
+    "selectPaymentMethod": "選擇支付方式：",
+    "alipay": "支付寶",
+    "wechatPay": "微信支付",
+    "scanWithAlipay": "請使用支付寶掃碼支付",
+    "scanWithWechat": "請使用微信掃碼支付",
+    "waitingForPayment": "支付完成後請等待頁面自動刷新...",
+    "paymentSuccess": "支付成功！您已升級為 Pro 用戶",
+    "paymentFailed": "創建支付訂單失敗，請重試",
+    "pleaseLoginFirst": "請先登入"
   },
   "ja": {
     "title": "Claude スキル",
@@ -166,7 +196,17 @@ const i18n = {
     "upgradeToPro": "Proにアップグレード",
     "logout": "ログアウト",
     "remainingToday": "本日残り",
-    "quotaExceeded": "1日の上限に達しました"
+    "quotaExceeded": "1日の上限に達しました",
+    "paymentTitle": "Proにアップグレード - ¥39.9",
+    "selectPaymentMethod": "支払い方法を選択：",
+    "alipay": "Alipay",
+    "wechatPay": "WeChat Pay",
+    "scanWithAlipay": "Alipayでスキャンして支払う",
+    "scanWithWechat": "WeChatでスキャンして支払う",
+    "waitingForPayment": "支払い完了をお待ちください...",
+    "paymentSuccess": "支払い完了！Proユーザーになりました",
+    "paymentFailed": "支払いの作成に失敗しました。再試行してください。",
+    "pleaseLoginFirst": "まずログインしてください"
   },
   "ko": {
     "title": "Claude 스킬",
@@ -208,7 +248,17 @@ const i18n = {
     "upgradeToPro": "Pro로 업그레이드",
     "logout": "로그아웃",
     "remainingToday": "오늘 남은 횟수",
-    "quotaExceeded": "일일 한도 도달"
+    "quotaExceeded": "일일 한도 도달",
+    "paymentTitle": "Pro로 업그레이드 - ¥39.9",
+    "selectPaymentMethod": "결제 방법 선택:",
+    "alipay": "알리페이",
+    "wechatPay": "위챗페이",
+    "scanWithAlipay": "알리페이로 스캔하여 결제",
+    "scanWithWechat": "위챗으로 스캔하여 결제",
+    "waitingForPayment": "결제 완료를 기다리는 중...",
+    "paymentSuccess": "결제 완료! Pro 사용자가 되었습니다",
+    "paymentFailed": "결제 생성에 실패했습니다. 다시 시도해 주세요.",
+    "pleaseLoginFirst": "먼저 로그인해 주세요"
   },
   "es": {
     "title": "Habilidades Claude",
@@ -250,7 +300,17 @@ const i18n = {
     "upgradeToPro": "Actualizar a Pro",
     "logout": "Cerrar sesión",
     "remainingToday": "restantes hoy",
-    "quotaExceeded": "Límite diario alcanzado"
+    "quotaExceeded": "Límite diario alcanzado",
+    "paymentTitle": "Actualizar a Pro - ¥39.9",
+    "selectPaymentMethod": "Selecciona método de pago:",
+    "alipay": "Alipay",
+    "wechatPay": "WeChat Pay",
+    "scanWithAlipay": "Escanea con Alipay para pagar",
+    "scanWithWechat": "Escanea con WeChat para pagar",
+    "waitingForPayment": "Esperando el pago...",
+    "paymentSuccess": "¡Pago exitoso! Ahora eres usuario Pro",
+    "paymentFailed": "Error al crear el pago. Por favor intenta de nuevo.",
+    "pleaseLoginFirst": "Por favor inicia sesión primero"
   },
   "fr": {
     "title": "Competences Claude",
@@ -292,7 +352,17 @@ const i18n = {
     "upgradeToPro": "Passer à Pro",
     "logout": "Se déconnecter",
     "remainingToday": "restantes aujourd'hui",
-    "quotaExceeded": "Limite quotidienne atteinte"
+    "quotaExceeded": "Limite quotidienne atteinte",
+    "paymentTitle": "Passer à Pro - ¥39.9",
+    "selectPaymentMethod": "Choisir le mode de paiement :",
+    "alipay": "Alipay",
+    "wechatPay": "WeChat Pay",
+    "scanWithAlipay": "Scannez avec Alipay pour payer",
+    "scanWithWechat": "Scannez avec WeChat pour payer",
+    "waitingForPayment": "En attente du paiement...",
+    "paymentSuccess": "Paiement réussi ! Vous êtes maintenant utilisateur Pro",
+    "paymentFailed": "Échec de la création du paiement. Veuillez réessayer.",
+    "pleaseLoginFirst": "Veuillez vous connecter d'abord"
   },
   "de": {
     "title": "Claude Fahigkeiten",
@@ -334,7 +404,17 @@ const i18n = {
     "upgradeToPro": "Auf Pro upgraden",
     "logout": "Abmelden",
     "remainingToday": "heute verbleibend",
-    "quotaExceeded": "Tageslimit erreicht"
+    "quotaExceeded": "Tageslimit erreicht",
+    "paymentTitle": "Auf Pro upgraden - ¥39.9",
+    "selectPaymentMethod": "Zahlungsmethode auswählen:",
+    "alipay": "Alipay",
+    "wechatPay": "WeChat Pay",
+    "scanWithAlipay": "Mit Alipay scannen zum Bezahlen",
+    "scanWithWechat": "Mit WeChat scannen zum Bezahlen",
+    "waitingForPayment": "Warte auf Zahlung...",
+    "paymentSuccess": "Zahlung erfolgreich! Sie sind jetzt Pro-Benutzer",
+    "paymentFailed": "Fehler beim Erstellen der Zahlung. Bitte erneut versuchen.",
+    "pleaseLoginFirst": "Bitte melden Sie sich zuerst an"
   }
 };
 
