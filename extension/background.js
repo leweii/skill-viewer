@@ -20,7 +20,7 @@ const PROVIDERS = {
 };
 
 // Cloud API configuration
-const CLOUD_API_URL = 'https://skill-viewer-api.vercel.app';
+const CLOUD_API_URL = 'https://skill-viewer.vercel.app';
 
 async function getCloudAuth() {
   return new Promise((resolve) => {
