@@ -19,10 +19,10 @@ const PROVIDERS = {
   }
 };
 
-// Cloud service configuration
-const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
-const CLOUD_API_URL = 'https://skill-viewer-api.vercel.app';
+// Cloud service configuration - UPDATE THESE VALUES
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';  // TODO: Replace with your Supabase URL
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';  // TODO: Replace with your Supabase anon key
+const CLOUD_API_URL = 'https://skill-viewer.vercel.app';
 
 async function initCloudUI() {
   const { cloudAuth } = await chrome.storage.local.get(['cloudAuth']);
@@ -71,6 +71,81 @@ document.getElementById('logout-btn')?.addEventListener('click', async () => {
   await chrome.storage.local.remove(['cloudAuth']);
   showLoggedOutState();
 });
+
+// Login with OAuth providers
+document.getElementById('login-github')?.addEventListener('click', () => handleOAuthLogin('github'));
+document.getElementById('login-google')?.addEventListener('click', () => handleOAuthLogin('google'));
+
+async function handleOAuthLogin(provider) {
+  // Check if Supabase is configured
+  if (SUPABASE_URL.includes('YOUR_PROJECT') || SUPABASE_ANON_KEY === 'YOUR_ANON_KEY') {
+    alert('Cloud service not configured. Please set up Supabase credentials first.\n\nSee: Settings > Cloud Service configuration in CLAUDE.md');
+    return;
+  }
+
+  try {
+    // Open OAuth in a new tab
+    const redirectUrl = chrome.identity.getRedirectURL();
+    const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=${provider}&redirect_to=${encodeURIComponent(redirectUrl)}`;
+
+    // Use chrome.identity.launchWebAuthFlow for OAuth
+    const responseUrl = await new Promise((resolve, reject) => {
+      chrome.identity.launchWebAuthFlow(
+        { url: authUrl, interactive: true },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+          } else {
+            resolve(response);
+          }
+        }
+      );
+    });
+
+    // Parse the response URL for tokens
+    const url = new URL(responseUrl);
+    const hashParams = new URLSearchParams(url.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+
+    if (!accessToken) {
+      throw new Error('No access token received');
+    }
+
+    // Get user info from Supabase
+    const userResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': SUPABASE_ANON_KEY
+      }
+    });
+
+    if (!userResponse.ok) {
+      throw new Error('Failed to get user info');
+    }
+
+    const user = await userResponse.json();
+
+    // Save auth state
+    const cloudAuth = {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        provider: provider
+      }
+    };
+
+    await chrome.storage.local.set({ cloudAuth });
+    showLoggedInState(cloudAuth);
+    fetchUsage(accessToken);
+
+  } catch (error) {
+    console.error('OAuth login failed:', error);
+    alert('Login failed: ' + error.message);
+  }
+}
 
 // Payment modal handling
 let pollingInterval = null;

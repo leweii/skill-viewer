@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Skill Viewer",
+  "name": "Skill Viewer [DEV]",
   "version": "1.4.0",
   "description": "View Claude Code skills on GitHub with AI-powered summaries",
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "identity"
   ],
   "host_permissions": [
     "https://github.com/*",
@@ -14,7 +15,8 @@
     "https://generativelanguage.googleapis.com/*",
     "https://api.openai.com/*",
     "https://api.anthropic.com/*",
-    "https://skill-viewer-api.vercel.app/*"
+    "https://skill-viewer.vercel.app/*",
+    "https://*.supabase.co/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -32,14 +34,14 @@
     "open_in_tab": true
   },
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons-dev/icon16.png",
+    "48": "icons-dev/icon48.png",
+    "128": "icons-dev/icon128.png"
   },
   "action": {
     "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png"
+      "16": "icons-dev/icon16.png",
+      "48": "icons-dev/icon48.png"
     },
     "default_title": "Skill Viewer"
   }
