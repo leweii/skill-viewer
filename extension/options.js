@@ -43,7 +43,7 @@ function showLoggedOutState() {
 function showLoggedInState(auth) {
   document.getElementById('cloud-logged-out').style.display = 'none';
   document.getElementById('cloud-logged-in').style.display = 'block';
-  document.getElementById('cloud-user-info').textContent = `Logged in as ${auth.user.email}`;
+  document.getElementById('cloud-user-info').textContent = auth.user.email;
 }
 
 async function fetchUsage(token) {
@@ -53,13 +53,41 @@ async function fetchUsage(token) {
     });
     const data = await response.json();
 
-    const remaining = data.dailyLimit - data.dailyUsage;
-    const status = data.isPaid ? 'Pro' : 'Free';
-    document.getElementById('cloud-usage-info').textContent =
-      `${status}: ${remaining}/${data.dailyLimit} remaining today`;
+    const used = data.dailyUsage;
+    const limit = data.dailyLimit;
+    const percent = Math.round((used / limit) * 100);
 
+    // Update plan badge
+    const badge = document.getElementById('cloud-plan-badge');
+    if (data.isPaid) {
+      badge.textContent = 'Pro';
+      badge.className = 'plan-badge pro';
+    } else {
+      badge.textContent = 'Free';
+      badge.className = 'plan-badge free';
+    }
+
+    // Update usage text
+    document.getElementById('cloud-usage-text').textContent = `${used} / ${limit} used today`;
+    document.getElementById('cloud-usage-percent').textContent = `${percent}%`;
+
+    // Update progress bar
+    const progressBar = document.getElementById('cloud-usage-bar');
+    progressBar.style.width = `${percent}%`;
+
+    // Change color based on usage
+    progressBar.classList.remove('warning', 'danger');
+    if (percent >= 90) {
+      progressBar.classList.add('danger');
+    } else if (percent >= 70) {
+      progressBar.classList.add('warning');
+    }
+
+    // Show upgrade button for free users
     if (!data.isPaid) {
       document.getElementById('upgrade-btn').style.display = 'inline-block';
+    } else {
+      document.getElementById('upgrade-btn').style.display = 'none';
     }
   } catch (err) {
     console.error('Failed to fetch usage:', err);
