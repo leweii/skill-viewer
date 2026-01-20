@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "matches": ["https://github.com/*/*"],
-      "js": ["lib/marked.min.js", "content.js"],
+      "js": ["lib/config.js", "lib/marked.min.js", "content.js"],
       "css": ["sidebar.css"],
       "run_at": "document_idle"
     }

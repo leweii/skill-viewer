@@ -1,5 +1,8 @@
 // Background service worker for Skill Viewer extension
 
+// Import shared configuration
+importScripts('lib/config.js');
+
 // Import provider configurations (inline for service worker)
 const PROVIDERS = {
   gemini: {
@@ -19,9 +22,6 @@ const PROVIDERS = {
   }
 };
 
-// Cloud API configuration
-const CLOUD_API_URL = 'https://skill-viewer.vercel.app';
-
 async function getCloudAuth() {
   return new Promise((resolve) => {
     chrome.storage.local.get(['cloudAuth'], (result) => {
@@ -38,7 +38,7 @@ async function cloudSummarize(repo, skillPath, skillName, skillContent, language
     headers['Authorization'] = `Bearer ${auth.accessToken}`;
   }
 
-  const response = await fetch(`${CLOUD_API_URL}/api/summarize`, {
+  const response = await fetch(CONFIG.API_SUMMARIZE, {
     method: 'POST',
     headers,
     body: JSON.stringify({ repo, skillPath, skillName, skillContent, language })

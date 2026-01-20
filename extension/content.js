@@ -589,7 +589,7 @@
     }
 
     // Track collect event
-    fetch('https://skill-viewer.vercel.app/api/collect', {
+    fetch(CONFIG.API_COLLECT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

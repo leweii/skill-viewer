@@ -19,10 +19,7 @@ const PROVIDERS = {
   }
 };
 
-// Cloud service configuration - UPDATE THESE VALUES
-const SUPABASE_URL = 'https://bnjukieczyexjioocrpp.supabase.co';  // TODO: Replace with your Supabase URL
-const SUPABASE_ANON_KEY = 'sb_publishable_BRc6dmo4MVUKu0yK_iIszQ_qLOG4yRL';  // TODO: Replace with your Supabase anon key
-const CLOUD_API_URL = 'https://skill-viewer.vercel.app';
+// Cloud service configuration is now in lib/config.js
 
 async function initCloudUI() {
   const { cloudAuth } = await chrome.storage.local.get(['cloudAuth']);
@@ -48,7 +45,7 @@ function showLoggedInState(auth) {
 
 async function fetchUsage(token) {
   try {
-    const response = await fetch(`${CLOUD_API_URL}/api/usage`, {
+    const response = await fetch(CONFIG.API_USAGE, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const data = await response.json();
@@ -121,7 +118,7 @@ document.getElementById('dev-upgrade-btn')?.addEventListener('click', async () =
       return;
     }
 
-    const response = await fetch(`${CLOUD_API_URL}/api/dev-upgrade`, {
+    const response = await fetch(CONFIG.API_DEV_UPGRADE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,7 +144,7 @@ document.getElementById('login-google')?.addEventListener('click', () => handleO
 
 async function handleOAuthLogin(provider) {
   // Check if Supabase is configured
-  if (SUPABASE_URL.includes('YOUR_PROJECT') || SUPABASE_ANON_KEY === 'YOUR_ANON_KEY') {
+  if (!CONFIG.isSupabaseConfigured()) {
     alert('Cloud service not configured. Please set up Supabase credentials first.\n\nSee: Settings > Cloud Service configuration in CLAUDE.md');
     return;
   }
@@ -158,7 +155,7 @@ async function handleOAuthLogin(provider) {
     console.log('Redirect URL:', redirectUrl);
 
     // Build OAuth URL
-    const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=${provider}&redirect_to=${encodeURIComponent(redirectUrl)}`;
+    const authUrl = `${CONFIG.SUPABASE_URL}/auth/v1/authorize?provider=${provider}&redirect_to=${encodeURIComponent(redirectUrl)}`;
     console.log('Auth URL:', authUrl);
 
     // Use chrome.identity.launchWebAuthFlow for OAuth
@@ -212,10 +209,10 @@ async function handleOAuthLogin(provider) {
 
     // Get user info from Supabase
     console.log('Fetching user info...');
-    const userResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    const userResponse = await fetch(`${CONFIG.SUPABASE_URL}/auth/v1/user`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
-        'apikey': SUPABASE_ANON_KEY
+        'apikey': CONFIG.SUPABASE_ANON_KEY
       }
     });
 
@@ -277,7 +274,7 @@ async function handlePayment(method) {
   }
 
   try {
-    const response = await fetch(`${CLOUD_API_URL}/api/create-qrcode`, {
+    const response = await fetch(CONFIG.API_CREATE_QRCODE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -318,7 +315,7 @@ function startPolling(token) {
 
   pollingInterval = setInterval(async () => {
     try {
-      const response = await fetch(`${CLOUD_API_URL}/api/check-order`, {
+      const response = await fetch(CONFIG.API_CHECK_ORDER, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const { status } = await response.json();
