@@ -1,72 +1,79 @@
 // api/index.js
 // Backend status page for testing
 
-import { getSupabase } from '../lib/supabase.js';
-
 export default async function handler(req, res) {
-  const status = {
-    service: 'Skill Viewer API',
-    timestamp: new Date().toISOString(),
-    env: {},
-    connections: {},
-  };
-
-  // Check environment variables (don't expose values)
-  const envVars = [
-    'SUPABASE_URL',
-    'SUPABASE_SERVICE_KEY',
-    'GEMINI_API_KEY',
-    'ALIPAY_APP_ID',
-    'ALIPAY_PRIVATE_KEY',
-    'ALIPAY_PUBLIC_KEY',
-    'WECHAT_APP_ID',
-    'WECHAT_MCH_ID',
-    'WECHAT_API_KEY',
-    'PAYMENT_AMOUNT',
-  ];
-
-  for (const key of envVars) {
-    const value = process.env[key];
-    status.env[key] = value ? '✓ configured' : '✗ missing';
-  }
-
-  // Test Supabase connection
   try {
-    const supabase = getSupabase();
-    const { data, error } = await supabase.from('skills').select('count').limit(1);
+    const status = {
+      service: 'Skill Viewer API',
+      timestamp: new Date().toISOString(),
+      env: {},
+      connections: {},
+    };
 
-    if (error) {
-      status.connections.supabase = `✗ error: ${error.message}`;
+    // Check environment variables (don't expose values)
+    const envVars = [
+      'SUPABASE_URL',
+      'SUPABASE_SERVICE_KEY',
+      'GEMINI_API_KEY',
+      'ALIPAY_APP_ID',
+      'ALIPAY_PRIVATE_KEY',
+      'ALIPAY_PUBLIC_KEY',
+      'WECHAT_APP_ID',
+      'WECHAT_MCH_ID',
+      'WECHAT_API_KEY',
+      'PAYMENT_AMOUNT',
+    ];
+
+    for (const key of envVars) {
+      const value = process.env[key];
+      status.env[key] = value ? '✓ configured' : '✗ missing';
+    }
+
+    // Test Supabase connection (only if env vars exist)
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+      try {
+        const { getSupabase } = await import('../lib/supabase.js');
+        const supabase = getSupabase();
+        const { data, error } = await supabase.from('skills').select('count').limit(1);
+
+        if (error) {
+          status.connections.supabase = `✗ error: ${error.message}`;
+        } else {
+          status.connections.supabase = '✓ connected';
+        }
+      } catch (err) {
+        status.connections.supabase = `✗ failed: ${err.message}`;
+      }
     } else {
-      status.connections.supabase = '✓ connected';
+      status.connections.supabase = '✗ env vars missing';
+    }
+
+    // Test Gemini API (just check if key exists, don't make actual call)
+    status.connections.gemini = process.env.GEMINI_API_KEY
+      ? '✓ key configured'
+      : '✗ key missing';
+
+    // Check payment providers
+    status.connections.alipay = (process.env.ALIPAY_APP_ID && process.env.ALIPAY_PRIVATE_KEY)
+      ? '✓ configured'
+      : '✗ not configured';
+
+    status.connections.wechat = (process.env.WECHAT_APP_ID && process.env.WECHAT_MCH_ID)
+      ? '✓ configured'
+      : '✗ not configured';
+
+    // Return HTML for browser or JSON for API clients
+    const acceptHeader = req.headers.accept || '';
+
+    if (acceptHeader.includes('text/html')) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.status(200).send(renderHTML(status));
+    } else {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).json(status);
     }
   } catch (err) {
-    status.connections.supabase = `✗ failed: ${err.message}`;
-  }
-
-  // Test Gemini API (just check if key exists, don't make actual call)
-  status.connections.gemini = process.env.GEMINI_API_KEY
-    ? '✓ key configured'
-    : '✗ key missing';
-
-  // Check payment providers
-  status.connections.alipay = (process.env.ALIPAY_APP_ID && process.env.ALIPAY_PRIVATE_KEY)
-    ? '✓ configured'
-    : '✗ not configured';
-
-  status.connections.wechat = (process.env.WECHAT_APP_ID && process.env.WECHAT_MCH_ID)
-    ? '✓ configured'
-    : '✗ not configured';
-
-  // Return HTML for browser or JSON for API clients
-  const acceptHeader = req.headers.accept || '';
-
-  if (acceptHeader.includes('text/html')) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(renderHTML(status));
-  } else {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(status);
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 }
 
