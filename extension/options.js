@@ -20,8 +20,8 @@ const PROVIDERS = {
 };
 
 // Cloud service configuration - UPDATE THESE VALUES
-const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';  // TODO: Replace with your Supabase URL
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';  // TODO: Replace with your Supabase anon key
+const SUPABASE_URL = 'https://bnjukieczyexjioocrpp.supabase.co';  // TODO: Replace with your Supabase URL
+const SUPABASE_ANON_KEY = 'sb_publishable_BRc6dmo4MVUKu0yK_iIszQ_qLOG4yRL';  // TODO: Replace with your Supabase anon key
 const CLOUD_API_URL = 'https://skill-viewer.vercel.app';
 
 async function initCloudUI() {
@@ -84,9 +84,13 @@ async function handleOAuthLogin(provider) {
   }
 
   try {
-    // Open OAuth in a new tab
+    // Get Chrome extension redirect URL
     const redirectUrl = chrome.identity.getRedirectURL();
+    console.log('Redirect URL:', redirectUrl);
+
+    // Build OAuth URL
     const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=${provider}&redirect_to=${encodeURIComponent(redirectUrl)}`;
+    console.log('Auth URL:', authUrl);
 
     // Use chrome.identity.launchWebAuthFlow for OAuth
     const responseUrl = await new Promise((resolve, reject) => {
@@ -95,6 +99,8 @@ async function handleOAuthLogin(provider) {
         (response) => {
           if (chrome.runtime.lastError) {
             reject(new Error(chrome.runtime.lastError.message));
+          } else if (!response) {
+            reject(new Error('No response URL received'));
           } else {
             resolve(response);
           }
@@ -102,17 +108,41 @@ async function handleOAuthLogin(provider) {
       );
     });
 
+    console.log('Response URL:', responseUrl);
+
     // Parse the response URL for tokens
     const url = new URL(responseUrl);
-    const hashParams = new URLSearchParams(url.hash.substring(1));
-    const accessToken = hashParams.get('access_token');
-    const refreshToken = hashParams.get('refresh_token');
+
+    // Check for error in response
+    const errorParam = url.searchParams.get('error') || new URLSearchParams(url.hash.substring(1)).get('error');
+    if (errorParam) {
+      const errorDesc = url.searchParams.get('error_description') || new URLSearchParams(url.hash.substring(1)).get('error_description');
+      throw new Error(`OAuth error: ${errorParam} - ${errorDesc || 'Unknown error'}`);
+    }
+
+    // Try to get tokens from hash first, then from query params
+    let accessToken, refreshToken;
+
+    if (url.hash) {
+      const hashParams = new URLSearchParams(url.hash.substring(1));
+      accessToken = hashParams.get('access_token');
+      refreshToken = hashParams.get('refresh_token');
+      console.log('Tokens from hash:', { accessToken: !!accessToken, refreshToken: !!refreshToken });
+    }
 
     if (!accessToken) {
-      throw new Error('No access token received');
+      accessToken = url.searchParams.get('access_token');
+      refreshToken = url.searchParams.get('refresh_token');
+      console.log('Tokens from query:', { accessToken: !!accessToken, refreshToken: !!refreshToken });
+    }
+
+    if (!accessToken) {
+      console.error('Full response URL:', responseUrl);
+      throw new Error('No access token in response. Check console for details.');
     }
 
     // Get user info from Supabase
+    console.log('Fetching user info...');
     const userResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -121,10 +151,13 @@ async function handleOAuthLogin(provider) {
     });
 
     if (!userResponse.ok) {
-      throw new Error('Failed to get user info');
+      const errorText = await userResponse.text();
+      console.error('User fetch error:', errorText);
+      throw new Error(`Failed to get user info: ${userResponse.status}`);
     }
 
     const user = await userResponse.json();
+    console.log('User:', user.email);
 
     // Save auth state
     const cloudAuth = {
@@ -141,9 +174,11 @@ async function handleOAuthLogin(provider) {
     showLoggedInState(cloudAuth);
     fetchUsage(accessToken);
 
+    console.log('Login successful!');
+
   } catch (error) {
     console.error('OAuth login failed:', error);
-    alert('Login failed: ' + error.message);
+    alert('Login failed: ' + error.message + '\n\nCheck DevTools console (F12) for details.');
   }
 }
 
