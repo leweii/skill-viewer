@@ -31,28 +31,42 @@ async function getCloudAuth() {
 }
 
 async function cloudSummarize(repo, skillPath, skillName, skillContent, language) {
+  console.log('[Cloud] Summarizing:', { repo, skillPath, skillName, language });
+  console.log('[Cloud] API URL:', CONFIG.API_SUMMARIZE);
+
   const auth = await getCloudAuth();
+  console.log('[Cloud] Auth:', auth ? 'logged in' : 'anonymous');
 
   const headers = { 'Content-Type': 'application/json' };
   if (auth?.accessToken) {
     headers['Authorization'] = `Bearer ${auth.accessToken}`;
   }
 
-  const response = await fetch(CONFIG.API_SUMMARIZE, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ repo, skillPath, skillName, skillContent, language })
-  });
+  try {
+    const response = await fetch(CONFIG.API_SUMMARIZE, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ repo, skillPath, skillName, skillContent, language })
+    });
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    if (response.status === 429) {
-      return { error: 'quota_exceeded', message: error.message };
+    console.log('[Cloud] Response status:', response.status);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      console.log('[Cloud] Error response:', error);
+      if (response.status === 429) {
+        return { error: 'quota_exceeded', message: error.message };
+      }
+      throw new Error(error.error || `API error: ${response.status}`);
     }
-    throw new Error(error.error || `API error: ${response.status}`);
-  }
 
-  return await response.json();
+    const result = await response.json();
+    console.log('[Cloud] Success:', { cached: result.cached, summaryLength: result.summary?.length });
+    return result;
+  } catch (err) {
+    console.error('[Cloud] Fetch error:', err);
+    throw err;
+  }
 }
 
 // Language names for prompts
