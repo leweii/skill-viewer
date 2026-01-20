@@ -227,6 +227,21 @@
       margin: 0 0 12px 0;
     }
 
+    .login-benefit {
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+
+    .login-benefit strong {
+      color: var(--accent-color);
+    }
+
+    .login-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 16px !important;
+    }
+
     .cloud-buttons {
       display: flex;
       gap: 8px;
@@ -360,7 +375,8 @@
       <h2 id="cloud-title">Cloud Service</h2>
       <div id="cloud-status" class="cloud-status">
         <div id="cloud-logged-out" class="cloud-state">
-          <p id="cloud-login-prompt">Login to use cloud summarization</p>
+          <p id="cloud-login-prompt" class="login-benefit">🎁 Sign in to unlock <strong>100 free</strong> AI summaries per day</p>
+          <p class="login-hint">No credit card required • Powered by Gemini</p>
           <div class="cloud-buttons">
             <button id="login-github" class="btn btn-secondary">Login with GitHub</button>
             <button id="login-google" class="btn btn-secondary">Login with Google</button>

@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       const value = process.env[key];
       // Show actual values for quota limits
       if (key === 'FREE_DAILY_LIMIT' || key === 'PAID_DAILY_LIMIT') {
-        status.env[key] = value || (key === 'FREE_DAILY_LIMIT' ? '5 (default)' : '50 (default)');
+        status.env[key] = value || (key === 'FREE_DAILY_LIMIT' ? '100 (default)' : '500 (default)');
       } else {
         status.env[key] = value ? '✓ configured' : '✗ missing';
       }
