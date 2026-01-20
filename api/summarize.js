@@ -76,7 +76,7 @@ export default async function handler(req, res) {
     if (!quotaResult.allowed) {
       return res.status(429).json({
         error: 'quota_exceeded',
-        message: `Daily limit of ${quotaResult.limit} reached. ${user ? 'Upgrade to Pro for 50/day.' : 'Login for more requests.'}`
+        message: `Daily limit of ${quotaResult.limit} reached. ${user ? 'Upgrade to Pro for higher limits.' : 'Login for more requests.'}`
       });
     }
 

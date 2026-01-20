@@ -1,6 +1,9 @@
 // api/usage.js
 import { getSupabase, verifyToken } from '../lib/supabase.js';
 
+const FREE_DAILY_LIMIT = parseInt(process.env.FREE_DAILY_LIMIT) || 100;
+const PAID_DAILY_LIMIT = parseInt(process.env.PAID_DAILY_LIMIT) || 500;
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -21,7 +24,7 @@ export default async function handler(req, res) {
       // Anonymous user
       return res.status(200).json({
         isPaid: false,
-        dailyLimit: 5,
+        dailyLimit: FREE_DAILY_LIMIT,
         dailyUsage: 0,
         authenticated: false
       });
@@ -55,7 +58,7 @@ export default async function handler(req, res) {
       userData.daily_usage = 0;
     }
 
-    const dailyLimit = userData.is_paid ? 50 : 5;
+    const dailyLimit = userData.is_paid ? PAID_DAILY_LIMIT : FREE_DAILY_LIMIT;
 
     // Calculate reset time (next midnight UTC)
     const tomorrow = new Date();
