@@ -22,11 +22,18 @@ export default async function handler(req, res) {
       'WECHAT_MCH_ID',
       'WECHAT_API_KEY',
       'PAYMENT_AMOUNT',
+      'FREE_DAILY_LIMIT',
+      'PAID_DAILY_LIMIT',
     ];
 
     for (const key of envVars) {
       const value = process.env[key];
-      status.env[key] = value ? '✓ configured' : '✗ missing';
+      // Show actual values for quota limits
+      if (key === 'FREE_DAILY_LIMIT' || key === 'PAID_DAILY_LIMIT') {
+        status.env[key] = value || (key === 'FREE_DAILY_LIMIT' ? '5 (default)' : '50 (default)');
+      } else {
+        status.env[key] = value ? '✓ configured' : '✗ missing';
+      }
     }
 
     // Test Supabase connection (only if env vars exist)
