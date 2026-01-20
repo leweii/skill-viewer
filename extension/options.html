@@ -140,13 +140,13 @@
       background: var(--bg-secondary);
     }
 
-    button.primary {
+    button.primary, .btn-primary {
       background: var(--accent-color);
       color: white;
       border-color: var(--accent-color);
     }
 
-    button.primary:hover {
+    button.primary:hover, .btn-primary:hover {
       background: var(--accent-hover);
     }
 
@@ -474,8 +474,9 @@
             </div>
           </div>
           <div class="cloud-buttons">
-            <button id="upgrade-btn" class="btn btn-primary" style="display: none;">Upgrade to Pro</button>
+            <button id="upgrade-btn" class="btn-primary" style="display: none;">Upgrade to Pro</button>
             <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            <button id="dev-upgrade-btn" class="btn btn-secondary" style="display: none;" title="Dev only: Skip payment">🧪 Dev: Set Pro</button>
           </div>
         </div>
       </div>

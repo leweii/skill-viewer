@@ -100,6 +100,47 @@ document.getElementById('logout-btn')?.addEventListener('click', async () => {
   showLoggedOutState();
 });
 
+// Dev mode: show dev upgrade button
+chrome.management?.getSelf((info) => {
+  if (info?.name?.includes('[DEV]')) {
+    const devBtn = document.getElementById('dev-upgrade-btn');
+    if (devBtn) devBtn.style.display = 'inline-block';
+  }
+});
+
+// Dev upgrade button handler (skip payment for testing)
+document.getElementById('dev-upgrade-btn')?.addEventListener('click', async () => {
+  if (!confirm('🧪 Dev Mode: Set this account as Pro user?\n\nThis will directly update the database without payment.')) {
+    return;
+  }
+
+  try {
+    const { cloudAuth } = await chrome.storage.local.get(['cloudAuth']);
+    if (!cloudAuth?.accessToken) {
+      alert('Please login first');
+      return;
+    }
+
+    const response = await fetch(`${CLOUD_API_URL}/api/dev-upgrade`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cloudAuth.accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to upgrade');
+    }
+
+    alert('✅ Account upgraded to Pro!');
+    fetchUsage(cloudAuth.accessToken);
+  } catch (error) {
+    alert('Failed: ' + error.message);
+  }
+});
+
 // Login with OAuth providers
 document.getElementById('login-github')?.addEventListener('click', () => handleOAuthLogin('github'));
 document.getElementById('login-google')?.addEventListener('click', () => handleOAuthLogin('google'));
