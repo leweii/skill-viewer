@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Skill Viewer [DEV]",
-  "version": "1.4.0",
+  "name": "Skill Viewer",
+  "version": "1.5.0",
   "description": "View Claude Code skills on GitHub with AI-powered summaries",
   "permissions": [
     "storage",
@@ -34,14 +34,14 @@
     "open_in_tab": true
   },
   "icons": {
-    "16": "icons-dev/icon16.png",
-    "48": "icons-dev/icon48.png",
-    "128": "icons-dev/icon128.png"
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
   "action": {
     "default_icon": {
-      "16": "icons-dev/icon16.png",
-      "48": "icons-dev/icon48.png"
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
     },
     "default_title": "Skill Viewer"
   }
