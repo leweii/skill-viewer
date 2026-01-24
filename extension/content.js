@@ -431,7 +431,9 @@
       for (const badge of badges) {
         const isWarning = badge.includes('⚠️');
         const className = isWarning ? 'sv-badge sv-badge-warning' : 'sv-badge sv-badge-info';
-        html += `<span class="${className}">${escapeHtml(badge)}</span>`;
+        // Strip markdown bold syntax (**text**) from badge
+        const cleanBadge = badge.replace(/\*\*/g, '');
+        html += `<span class="${className}">${escapeHtml(cleanBadge)}</span>`;
       }
       html += '</div>';
 
