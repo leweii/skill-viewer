@@ -358,7 +358,8 @@ async function handleSummarize(request) {
   }
 
   // Check local cache
-  const cacheKey = `summary_${repo}_${skillName}_${summaryLanguage}`;
+  const isPrivate = request.isPrivate ? 'private_' : '';
+  const cacheKey = `summary_${isPrivate}${repo}_${skillName}_${summaryLanguage}`;
   const cached = await chrome.storage.local.get(cacheKey);
 
   if (cached[cacheKey]?.summary) {
