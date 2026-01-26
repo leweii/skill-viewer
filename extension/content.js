@@ -137,28 +137,6 @@
     return potentialDirs;
   }
 
-  async function fetchSkillsViaBackgroundTab(owner, repo, branch, potentialDirs) {
-    // Try each potential skills directory via background tab
-    for (const dir of potentialDirs) {
-      try {
-        const response = await chrome.runtime.sendMessage({
-          type: 'FETCH_SKILLS_DIR',
-          owner,
-          repo,
-          branch,
-          skillsDir: dir
-        });
-
-        if (response.skills && response.skills.length > 0) {
-          return response.skills;
-        }
-      } catch (err) {
-        console.log(`Failed to fetch ${dir}:`, err.message);
-      }
-    }
-    return [];
-  }
-
   async function checkForSkills() {
     const repoInfo = parseRepoFromUrl();
 
@@ -177,14 +155,20 @@
       const branch = detectBranch();
       const skills = await fetchSkills(repoInfo.owner, repoInfo.repo, branch);
 
-      // Don't show sidebar if no skills found
-      if (skills.length === 0) {
+      // Don't show sidebar if no skills found and no hint
+      if (skills.length === 0 && !skills.hasSkillsFolder) {
         removeSidebar();
         return;
       }
 
-      // Show sidebar only when skills are found
+      // Show sidebar
       showSidebar();
+
+      // Handle private repo with skills folder but no visible skills
+      if (skills.length === 0 && skills.hasSkillsFolder) {
+        renderPrivateRepoHint(repoInfo, branch, skills.skillsFolderPath);
+        return;
+      }
 
       // Render skills
       await renderSkills(skills, repoInfo, branch);
@@ -205,22 +189,23 @@
       if (response.status === 404 || response.status === 403) {
         // Check if user can see the repo (private but has access)
         if (isPrivateRepoAccessible()) {
-          // First try direct DOM extraction (if skills are visible in current view)
+          // Try DOM extraction for skills visible in current view
           const domSkills = extractSkillsFromDOM();
           if (domSkills.length > 0) {
             domSkills.isPrivateRepo = true;
             return domSkills;
           }
 
-          // If no skills visible, check if .claude or skills folder exists
-          // and fetch the directory listing via background tab
+          // Check if .claude or skills folder exists but skills aren't visible
+          // Show a hint to navigate to the skills folder
           const potentialDirs = detectPotentialSkillsDirs();
           if (potentialDirs.length > 0) {
-            const bgSkills = await fetchSkillsViaBackgroundTab(owner, repo, branch, potentialDirs);
-            if (bgSkills.length > 0) {
-              bgSkills.isPrivateRepo = true;
-              return bgSkills;
-            }
+            // Return empty array with hint flag
+            const emptyWithHint = [];
+            emptyWithHint.isPrivateRepo = true;
+            emptyWithHint.hasSkillsFolder = true;
+            emptyWithHint.skillsFolderPath = potentialDirs[0];
+            return emptyWithHint;
           }
         }
 
@@ -434,6 +419,23 @@
     `;
   }
 
+  function renderPrivateRepoHint(repoInfo, branch, skillsFolderPath) {
+    const content = sidebarEl.querySelector('.sv-content');
+    const folderUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/tree/${branch}/${skillsFolderPath}`;
+
+    // Update header
+    sidebarEl.querySelector('.sv-header h2').textContent = 'Claude Skills 🔒';
+
+    content.innerHTML = `
+      <div class="sv-privacy-notice">
+        <p>🔒 Private Repository</p>
+        <p>We detected a skills folder but can't see its contents from here.</p>
+        <p>Navigate to the skills folder to view available skills:</p>
+        <a href="${folderUrl}" class="sv-view-link" style="margin-top: 8px; display: inline-block;">Open ${skillsFolderPath}/ →</a>
+      </div>
+    `;
+  }
+
   async function renderSkills(skills, repoInfo, branch) {
     // Store for collect feature
     window.__skillViewerRepoInfo = { repoInfo, branch };
@@ -565,78 +567,6 @@
       const skillEl = content.querySelector(`[data-skill="${skill.name}"] .sv-skill-body`);
       skillEl.innerHTML = `
         <div class="sv-empty">Failed to load skill</div>
-      `;
-    }
-  }
-
-  async function loadPrivateSkillContent(skillEl, repoInfo, branch) {
-    if (skillEl.dataset.loaded) return;
-    skillEl.dataset.loaded = 'true';
-
-    const skillName = skillEl.dataset.skill;
-    const skillPath = skillEl.dataset.skillPath;
-    const bodyEl = skillEl.querySelector('.sv-skill-body');
-
-    // Determine the file path to fetch
-    const isSingleFile = skillPath.endsWith('.md');
-    const filePath = isSingleFile ? skillPath : `${skillPath}/SKILL.md`;
-    const githubUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${filePath}`;
-
-    bodyEl.innerHTML = `
-      <div class="sv-summarizing">
-        <div class="sv-spinner"></div>
-        Loading content...
-      </div>
-    `;
-
-    try {
-      // Fetch content via background script (handles credentials + fallback)
-      const response = await chrome.runtime.sendMessage({
-        type: 'FETCH_PRIVATE_SKILL',
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        branch: branch,
-        skillPath: filePath
-      });
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      const skillContent = response.content;
-
-      // Try to summarize
-      const summaryResponse = await chrome.runtime.sendMessage({
-        type: 'SUMMARIZE_SKILL',
-        repo: repoInfo.full,
-        skillName: skillName,
-        skillPath: skillPath,
-        skillContent,
-        isPrivate: true
-      });
-
-      if (summaryResponse.summary && !summaryResponse.fallback) {
-        bodyEl.innerHTML = `
-          <div class="sv-summary">${renderSummary(summaryResponse.summary)}</div>
-          <a href="${githubUrl}" target="_blank" class="sv-view-link">View Full Skill →</a>
-        `;
-      } else {
-        // Show raw content
-        const rendered = renderBasicMarkdown(skillContent);
-        bodyEl.innerHTML = `
-          <div class="sv-raw-content">${rendered}</div>
-          <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
-        `;
-
-        if (summaryResponse.error && summaryResponse.error !== 'No API key configured') {
-          showToast(summaryResponse.error, true);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to load private skill:', err);
-      bodyEl.innerHTML = `
-        <div class="sv-empty">Failed to load: ${escapeHtml(err.message)}</div>
-        <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
       `;
     }
   }

@@ -6,9 +6,7 @@
   "permissions": [
     "storage",
     "activeTab",
-    "identity",
-    "scripting",
-    "tabs"
+    "identity"
   ],
   "host_permissions": [
     "https://github.com/*",
