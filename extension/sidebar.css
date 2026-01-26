@@ -145,6 +145,32 @@
   color: #8b949e;
 }
 
+/* Privacy notice for private repos */
+.sv-privacy-notice {
+  text-align: center;
+  padding: 16px;
+  color: #57606a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sv-privacy-notice p {
+  margin: 0 0 8px 0;
+}
+
+.sv-privacy-notice p:first-child {
+  font-weight: 500;
+  color: #24292f;
+}
+
+.dark .sv-privacy-notice {
+  color: #8b949e;
+}
+
+.dark .sv-privacy-notice p:first-child {
+  color: #e6edf3;
+}
+
 /* Skill item */
 .sv-skill {
   margin-bottom: 8px;

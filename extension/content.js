@@ -448,32 +448,44 @@
       : `Claude Skills (${skills.length})`;
     sidebarEl.querySelector('.sv-header h2').textContent = headerText;
 
-    content.innerHTML = skills.map((skill, index) => `
-      <div class="sv-skill ${index >= 2 ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}" data-private="${isPrivateRepo}">
-        <div class="sv-skill-header">
-          <span class="sv-chevron">▼</span>
-          <span class="sv-skill-name">${escapeHtml(skill.name)}</span>
-          <button class="sv-collect-btn" data-skill="${escapeHtml(skill.name)}" data-path="${escapeHtml(skill.path)}">Collect</button>
-        </div>
-        <div class="sv-skill-body">
-          <div class="sv-summarizing">
+    // For private repos, all skills start collapsed with privacy message
+    // For public repos, first 2 are expanded with loading spinner
+    content.innerHTML = skills.map((skill, index) => {
+      const isCollapsed = isPrivateRepo || index >= 2;
+      const isSingleFile = skill.path.endsWith('.md');
+      const filePath = isSingleFile ? skill.path : `${skill.path}/SKILL.md`;
+      const githubUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${filePath}`;
+
+      const bodyContent = isPrivateRepo
+        ? `<div class="sv-privacy-notice">
+            <p>🔒 This is a private repository.</p>
+            <p>We respect your privacy and won't analyze the content.</p>
+            <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
+          </div>`
+        : `<div class="sv-summarizing">
             <div class="sv-spinner"></div>
-            ${isPrivateRepo ? 'Click to load...' : 'Loading...'}
+            Loading...
+          </div>`;
+
+      return `
+        <div class="sv-skill ${isCollapsed ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}" data-private="${isPrivateRepo}">
+          <div class="sv-skill-header">
+            <span class="sv-chevron">▼</span>
+            <span class="sv-skill-name">${escapeHtml(skill.name)}</span>
+            <button class="sv-collect-btn" data-skill="${escapeHtml(skill.name)}" data-path="${escapeHtml(skill.path)}">Collect</button>
+          </div>
+          <div class="sv-skill-body">
+            ${bodyContent}
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     // Bind collapse toggle
     content.querySelectorAll('.sv-skill-header').forEach(header => {
       header.addEventListener('click', (e) => {
         const skillEl = header.parentElement;
         skillEl.classList.toggle('collapsed');
-
-        // For private repos, load content on expand if not loaded
-        if (isPrivateRepo && !skillEl.classList.contains('collapsed') && !skillEl.dataset.loaded) {
-          loadPrivateSkillContent(skillEl, repoInfo, branch);
-        }
       });
     });
 
@@ -488,15 +500,10 @@
     });
 
     // For public repos, load content immediately
+    // For private repos, content is already set with privacy message
     if (!isPrivateRepo) {
       for (const skill of skills) {
         await loadSkillContent(skill, repoInfo, branch, content);
-      }
-    } else {
-      // For private repos, auto-load first 2 expanded skills
-      const expandedSkills = content.querySelectorAll('.sv-skill:not(.collapsed)');
-      for (const skillEl of expandedSkills) {
-        await loadPrivateSkillContent(skillEl, repoInfo, branch);
       }
     }
   }
