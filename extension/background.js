@@ -306,6 +306,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ success: true });
     return true;
   }
+
+  if (request.type === 'FETCH_PRIVATE_SKILL') {
+    fetchPrivateSkillContent(request.owner, request.repo, request.branch, request.skillPath)
+      .then(content => sendResponse({ content }))
+      .catch(err => sendResponse({ error: err.message }));
+    return true;
+  }
 });
 
 async function handleSummarize(request) {
@@ -381,6 +388,88 @@ async function fetchSkillContent(url) {
     throw new Error(`Failed to fetch: ${response.status}`);
   }
   return await response.text();
+}
+
+async function fetchPrivateSkillContent(owner, repo, branch, skillPath) {
+  const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${skillPath}`;
+
+  // Try fetch with credentials first (uses GitHub session cookie)
+  try {
+    const response = await fetch(rawUrl, {
+      credentials: 'include',
+      mode: 'cors'
+    });
+
+    if (response.ok) {
+      return await response.text();
+    }
+  } catch (err) {
+    console.log('Fetch with credentials failed:', err.message);
+  }
+
+  // Fallback: fetch via background tab
+  return await fetchViaBackgroundTab(owner, repo, branch, skillPath);
+}
+
+async function fetchViaBackgroundTab(owner, repo, branch, skillPath) {
+  const fileUrl = `https://github.com/${owner}/${repo}/blob/${branch}/${skillPath}`;
+
+  // Create inactive tab
+  const tab = await chrome.tabs.create({ url: fileUrl, active: false });
+
+  // Wait for page to load
+  await new Promise(resolve => {
+    const listener = (tabId, info) => {
+      if (tabId === tab.id && info.status === 'complete') {
+        chrome.tabs.onUpdated.removeListener(listener);
+        resolve();
+      }
+    };
+    chrome.tabs.onUpdated.addListener(listener);
+  });
+
+  // Small delay to ensure DOM is ready
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  // Extract content from page
+  const results = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: () => {
+      // Try multiple selectors for GitHub's file content
+      const codeBlock = document.querySelector('[data-code-text]');
+      if (codeBlock) {
+        return codeBlock.getAttribute('data-code-text');
+      }
+
+      const blobContent = document.querySelector('.blob-code-content');
+      if (blobContent) {
+        return blobContent.textContent;
+      }
+
+      const rawContent = document.querySelector('[data-plain]');
+      if (rawContent) {
+        return rawContent.textContent;
+      }
+
+      // Try the new GitHub file viewer
+      const lines = document.querySelectorAll('.react-code-line-contents');
+      if (lines.length > 0) {
+        return Array.from(lines).map(l => l.textContent).join('\n');
+      }
+
+      return null;
+    }
+  });
+
+  // Close tab
+  await chrome.tabs.remove(tab.id);
+
+  const content = results?.[0]?.result;
+  if (!content) {
+    throw new Error('Could not extract content from page');
+  }
+
+  return content;
 }
 
 // Handle extension icon click
