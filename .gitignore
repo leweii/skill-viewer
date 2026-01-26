@@ -5,3 +5,6 @@ extension/screenshots/
 node_modules/
 .env
 .vercel/
+
+# Dev icons for local testing
+extension/icons-dev/

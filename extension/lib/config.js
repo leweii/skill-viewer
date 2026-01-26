@@ -19,7 +19,7 @@ var CONFIG = {
 
   // Supabase configuration (for OAuth)
   SUPABASE_URL: 'https://bnjukieczyexjioocrpp.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuanVraWVjenlleGppb29jcnBwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0NTUzNDAsImV4cCI6MjA1MzAzMTM0MH0.vS5n4V8LnPZPm3OjPNGirQh3sMj87xkJBCCKv6Razz0',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuanVraWVjenlleGppb29jcnBwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4OTYyNzgsImV4cCI6MjA4NDQ3MjI3OH0.wuh9sRfCK6U-rGhJL4fcSmNpDQ6EkS395jw47zouP8A',
 
   // Check if Supabase is configured
   isSupabaseConfigured: function() {

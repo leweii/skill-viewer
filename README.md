@@ -9,6 +9,12 @@
 </p>
 
 <p align="center">
+  <a href="https://www.producthunt.com/products/skill-viewer?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-skill-viewer" target="_blank" rel="noopener noreferrer">
+    <img alt="Skill Viewer - Discover Claude Code skills on GitHub with AI summaries | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1066606&theme=light&t=1769134094091">
+  </a>
+</p>
+
+<p align="center">
   <a href="#features">Features</a> •
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
