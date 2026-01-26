@@ -65,6 +65,60 @@
     return hasFileTree !== null;
   }
 
+  function extractSkillsFromDOM() {
+    const skills = [];
+    const skillPaths = new Set();
+
+    // Find all file/folder links in the file tree
+    const links = document.querySelectorAll('a[href*="/blob/"], a[href*="/tree/"]');
+
+    for (const link of links) {
+      const href = link.getAttribute('href') || '';
+
+      // Check if path contains skills directory
+      const skillMatch = href.match(/\/(blob|tree)\/[^/]+\/(.+)/);
+      if (!skillMatch) continue;
+
+      const filePath = skillMatch[2];
+
+      // Match .claude/skills/ or skills/ patterns
+      let skillDir = null;
+      if (filePath.includes('.claude/skills/')) {
+        skillDir = '.claude/skills/';
+      } else if (filePath.includes('skills/')) {
+        skillDir = 'skills/';
+      }
+
+      if (!skillDir) continue;
+
+      const idx = filePath.indexOf(skillDir);
+      const afterSkillsDir = filePath.slice(idx + skillDir.length);
+      const parts = afterSkillsDir.split('/');
+
+      if (parts.length === 0 || !parts[0]) continue;
+
+      // Skill name is first part after skills/
+      const skillName = parts[0].replace(/\.md$/, '');
+      const skillPath = filePath.slice(0, idx + skillDir.length) + (parts[0].endsWith('.md') ? parts[0] : skillName);
+
+      if (skillPaths.has(skillPath)) continue;
+      skillPaths.add(skillPath);
+
+      const isSingleFile = parts[0].endsWith('.md');
+
+      skills.push({
+        name: skillName,
+        path: skillPath,
+        isSingleFile,
+        files: isSingleFile
+          ? [{ name: parts[0], path: filePath }]
+          : [] // Will be populated if needed
+      });
+    }
+
+    return skills;
+  }
+
   async function checkForSkills() {
     const repoInfo = parseRepoFromUrl();
 
