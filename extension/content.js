@@ -58,11 +58,10 @@
   }
 
   function isPrivateRepoAccessible() {
-    // Check if page has visible file tree (user is logged in and has access)
-    const hasFileTree = document.querySelector('[aria-label="Folders and files"]')
-                     || document.querySelector('.js-navigation-container')
-                     || document.querySelector('[data-testid="repos-file-tree-container"]');
-    return hasFileTree !== null;
+    // Check if page has visible file/folder links (user is logged in and has access)
+    // Using actual links instead of container selectors which GitHub changes frequently
+    const hasFileLinks = document.querySelectorAll('a[href*="/blob/"], a[href*="/tree/"]').length > 0;
+    return hasFileLinks;
   }
 
   function extractSkillsFromDOM() {
