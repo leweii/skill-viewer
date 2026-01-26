@@ -387,13 +387,18 @@
     // Store for collect feature
     window.__skillViewerRepoInfo = { repoInfo, branch };
 
+    const isPrivateRepo = skills.isPrivateRepo === true;
+
     const content = sidebarEl.querySelector('.sv-content');
 
-    // Update header with count
-    sidebarEl.querySelector('.sv-header h2').textContent = `Claude Skills (${skills.length})`;
+    // Update header with count and private indicator
+    const headerText = isPrivateRepo
+      ? `Claude Skills (${skills.length}) 🔒`
+      : `Claude Skills (${skills.length})`;
+    sidebarEl.querySelector('.sv-header h2').textContent = headerText;
 
     content.innerHTML = skills.map((skill, index) => `
-      <div class="sv-skill ${index >= 2 ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}">
+      <div class="sv-skill ${index >= 2 ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}" data-private="${isPrivateRepo}">
         <div class="sv-skill-header">
           <span class="sv-chevron">▼</span>
           <span class="sv-skill-name">${escapeHtml(skill.name)}</span>
@@ -402,7 +407,7 @@
         <div class="sv-skill-body">
           <div class="sv-summarizing">
             <div class="sv-spinner"></div>
-            Loading...
+            ${isPrivateRepo ? 'Click to load...' : 'Loading...'}
           </div>
         </div>
       </div>
@@ -410,8 +415,14 @@
 
     // Bind collapse toggle
     content.querySelectorAll('.sv-skill-header').forEach(header => {
-      header.addEventListener('click', () => {
-        header.parentElement.classList.toggle('collapsed');
+      header.addEventListener('click', (e) => {
+        const skillEl = header.parentElement;
+        skillEl.classList.toggle('collapsed');
+
+        // For private repos, load content on expand if not loaded
+        if (isPrivateRepo && !skillEl.classList.contains('collapsed') && !skillEl.dataset.loaded) {
+          loadPrivateSkillContent(skillEl, repoInfo, branch);
+        }
       });
     });
 
@@ -425,66 +436,150 @@
       });
     });
 
-    // Load content for each skill
-    for (const skill of skills) {
-      // Support both single-file skills (.claude/skills/skill-name.md)
-      // and folder-based skills (.claude/skills/skill-name/SKILL.md)
-      const isSingleFileSkill = skill.path.endsWith('.md');
-      const skillFile = isSingleFileSkill
-        ? skill.files[0]  // Single-file: the only file is the skill definition
-        : skill.files.find(f => f.name === 'SKILL.md');  // Folder-based: look for SKILL.md
-      if (!skillFile) continue;
-
-      const rawUrl = `https://raw.githubusercontent.com/${repoInfo.owner}/${repoInfo.repo}/${branch}/${skillFile.path}`;
-      const githubUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${skillFile.path}`;
-
-      try {
-        // Fetch skill content
-        const response = await chrome.runtime.sendMessage({
-          type: 'FETCH_SKILL_CONTENT',
-          url: rawUrl
-        });
-
-        if (response.error) {
-          throw new Error(response.error);
-        }
-
-        const skillContent = response.content;
-
-        // Try to summarize
-        const summaryResponse = await chrome.runtime.sendMessage({
-          type: 'SUMMARIZE_SKILL',
-          repo: repoInfo.full,
-          skillName: skill.name,
-          skillPath: skill.path,
-          skillContent
-        });
-
-        const skillEl = content.querySelector(`[data-skill="${skill.name}"] .sv-skill-body`);
-
-        if (summaryResponse.summary && !summaryResponse.fallback) {
-          skillEl.innerHTML = `
-            <div class="sv-summary">${renderSummary(summaryResponse.summary)}</div>
-            <a href="${githubUrl}" target="_blank" class="sv-view-link">View Full Skill →</a>
-          `;
-        } else {
-          // Show raw content
-          const rendered = renderBasicMarkdown(skillContent);
-          skillEl.innerHTML = `
-            <div class="sv-raw-content">${rendered}</div>
-            <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
-          `;
-
-          if (summaryResponse.error && summaryResponse.error !== 'No API key configured') {
-            showToast(summaryResponse.error, true);
-          }
-        }
-      } catch (err) {
-        const skillEl = content.querySelector(`[data-skill="${skill.name}"] .sv-skill-body`);
-        skillEl.innerHTML = `
-          <div class="sv-empty">Failed to load skill</div>
-        `;
+    // For public repos, load content immediately
+    if (!isPrivateRepo) {
+      for (const skill of skills) {
+        await loadSkillContent(skill, repoInfo, branch, content);
       }
+    } else {
+      // For private repos, auto-load first 2 expanded skills
+      const expandedSkills = content.querySelectorAll('.sv-skill:not(.collapsed)');
+      for (const skillEl of expandedSkills) {
+        await loadPrivateSkillContent(skillEl, repoInfo, branch);
+      }
+    }
+  }
+
+  async function loadSkillContent(skill, repoInfo, branch, content) {
+    // Support both single-file skills (.claude/skills/skill-name.md)
+    // and folder-based skills (.claude/skills/skill-name/SKILL.md)
+    const isSingleFileSkill = skill.path.endsWith('.md');
+    const skillFile = isSingleFileSkill
+      ? skill.files[0]  // Single-file: the only file is the skill definition
+      : skill.files.find(f => f.name === 'SKILL.md');  // Folder-based: look for SKILL.md
+    if (!skillFile) return;
+
+    const rawUrl = `https://raw.githubusercontent.com/${repoInfo.owner}/${repoInfo.repo}/${branch}/${skillFile.path}`;
+    const githubUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${skillFile.path}`;
+
+    try {
+      // Fetch skill content
+      const response = await chrome.runtime.sendMessage({
+        type: 'FETCH_SKILL_CONTENT',
+        url: rawUrl
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      const skillContent = response.content;
+
+      // Try to summarize
+      const summaryResponse = await chrome.runtime.sendMessage({
+        type: 'SUMMARIZE_SKILL',
+        repo: repoInfo.full,
+        skillName: skill.name,
+        skillPath: skill.path,
+        skillContent
+      });
+
+      const skillEl = content.querySelector(`[data-skill="${skill.name}"] .sv-skill-body`);
+
+      if (summaryResponse.summary && !summaryResponse.fallback) {
+        skillEl.innerHTML = `
+          <div class="sv-summary">${renderSummary(summaryResponse.summary)}</div>
+          <a href="${githubUrl}" target="_blank" class="sv-view-link">View Full Skill →</a>
+        `;
+      } else {
+        // Show raw content
+        const rendered = renderBasicMarkdown(skillContent);
+        skillEl.innerHTML = `
+          <div class="sv-raw-content">${rendered}</div>
+          <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
+        `;
+
+        if (summaryResponse.error && summaryResponse.error !== 'No API key configured') {
+          showToast(summaryResponse.error, true);
+        }
+      }
+    } catch (err) {
+      const skillEl = content.querySelector(`[data-skill="${skill.name}"] .sv-skill-body`);
+      skillEl.innerHTML = `
+        <div class="sv-empty">Failed to load skill</div>
+      `;
+    }
+  }
+
+  async function loadPrivateSkillContent(skillEl, repoInfo, branch) {
+    if (skillEl.dataset.loaded) return;
+    skillEl.dataset.loaded = 'true';
+
+    const skillName = skillEl.dataset.skill;
+    const skillPath = skillEl.dataset.skillPath;
+    const bodyEl = skillEl.querySelector('.sv-skill-body');
+
+    // Determine the file path to fetch
+    const isSingleFile = skillPath.endsWith('.md');
+    const filePath = isSingleFile ? skillPath : `${skillPath}/SKILL.md`;
+    const githubUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${filePath}`;
+
+    bodyEl.innerHTML = `
+      <div class="sv-summarizing">
+        <div class="sv-spinner"></div>
+        Loading content...
+      </div>
+    `;
+
+    try {
+      // Fetch content via background script (handles credentials + fallback)
+      const response = await chrome.runtime.sendMessage({
+        type: 'FETCH_PRIVATE_SKILL',
+        owner: repoInfo.owner,
+        repo: repoInfo.repo,
+        branch: branch,
+        skillPath: filePath
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      const skillContent = response.content;
+
+      // Try to summarize
+      const summaryResponse = await chrome.runtime.sendMessage({
+        type: 'SUMMARIZE_SKILL',
+        repo: repoInfo.full,
+        skillName: skillName,
+        skillPath: skillPath,
+        skillContent,
+        isPrivate: true
+      });
+
+      if (summaryResponse.summary && !summaryResponse.fallback) {
+        bodyEl.innerHTML = `
+          <div class="sv-summary">${renderSummary(summaryResponse.summary)}</div>
+          <a href="${githubUrl}" target="_blank" class="sv-view-link">View Full Skill →</a>
+        `;
+      } else {
+        // Show raw content
+        const rendered = renderBasicMarkdown(skillContent);
+        bodyEl.innerHTML = `
+          <div class="sv-raw-content">${rendered}</div>
+          <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
+        `;
+
+        if (summaryResponse.error && summaryResponse.error !== 'No API key configured') {
+          showToast(summaryResponse.error, true);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load private skill:', err);
+      bodyEl.innerHTML = `
+        <div class="sv-empty">Failed to load: ${escapeHtml(err.message)}</div>
+        <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
+      `;
     }
   }
 
