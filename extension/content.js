@@ -118,6 +118,47 @@
     return skills;
   }
 
+  function detectPotentialSkillsDirs() {
+    // Check if .claude or skills folder exists in the visible file tree
+    // This helps detect private repos where we need to fetch skills via background tab
+    const links = document.querySelectorAll('a[href*="/tree/"]');
+    const potentialDirs = [];
+
+    for (const link of links) {
+      const href = link.getAttribute('href') || '';
+      // Match .claude folder or skills folder at root
+      if (href.match(/\/tree\/[^/]+\/\.claude$/)) {
+        potentialDirs.push('.claude/skills');
+      } else if (href.match(/\/tree\/[^/]+\/skills$/)) {
+        potentialDirs.push('skills');
+      }
+    }
+
+    return potentialDirs;
+  }
+
+  async function fetchSkillsViaBackgroundTab(owner, repo, branch, potentialDirs) {
+    // Try each potential skills directory via background tab
+    for (const dir of potentialDirs) {
+      try {
+        const response = await chrome.runtime.sendMessage({
+          type: 'FETCH_SKILLS_DIR',
+          owner,
+          repo,
+          branch,
+          skillsDir: dir
+        });
+
+        if (response.skills && response.skills.length > 0) {
+          return response.skills;
+        }
+      } catch (err) {
+        console.log(`Failed to fetch ${dir}:`, err.message);
+      }
+    }
+    return [];
+  }
+
   async function checkForSkills() {
     const repoInfo = parseRepoFromUrl();
 
@@ -164,11 +205,22 @@
       if (response.status === 404 || response.status === 403) {
         // Check if user can see the repo (private but has access)
         if (isPrivateRepoAccessible()) {
+          // First try direct DOM extraction (if skills are visible in current view)
           const domSkills = extractSkillsFromDOM();
           if (domSkills.length > 0) {
-            // Mark as private repo mode
             domSkills.isPrivateRepo = true;
             return domSkills;
+          }
+
+          // If no skills visible, check if .claude or skills folder exists
+          // and fetch the directory listing via background tab
+          const potentialDirs = detectPotentialSkillsDirs();
+          if (potentialDirs.length > 0) {
+            const bgSkills = await fetchSkillsViaBackgroundTab(owner, repo, branch, potentialDirs);
+            if (bgSkills.length > 0) {
+              bgSkills.isPrivateRepo = true;
+              return bgSkills;
+            }
           }
         }
 

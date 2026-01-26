@@ -313,6 +313,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(err => sendResponse({ error: err.message }));
     return true;
   }
+
+  if (request.type === 'FETCH_SKILLS_DIR') {
+    fetchSkillsDir(request.owner, request.repo, request.branch, request.skillsDir)
+      .then(skills => sendResponse({ skills }))
+      .catch(err => sendResponse({ error: err.message, skills: [] }));
+    return true;
+  }
 });
 
 async function handleSummarize(request) {
@@ -471,6 +478,82 @@ async function fetchViaBackgroundTab(owner, repo, branch, skillPath) {
   }
 
   return content;
+}
+
+async function fetchSkillsDir(owner, repo, branch, skillsDir) {
+  const dirUrl = `https://github.com/${owner}/${repo}/tree/${branch}/${skillsDir}`;
+
+  // Create inactive tab to load the skills directory
+  const tab = await chrome.tabs.create({ url: dirUrl, active: false });
+
+  // Wait for page to load
+  await new Promise(resolve => {
+    const listener = (tabId, info) => {
+      if (tabId === tab.id && info.status === 'complete') {
+        chrome.tabs.onUpdated.removeListener(listener);
+        resolve();
+      }
+    };
+    chrome.tabs.onUpdated.addListener(listener);
+  });
+
+  // Small delay to ensure DOM is ready
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  // Extract skill list from the directory page
+  const results = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: (skillsDir) => {
+      const skills = [];
+      const links = document.querySelectorAll('a[href*="/blob/"], a[href*="/tree/"]');
+
+      for (const link of links) {
+        const href = link.getAttribute('href') || '';
+        // Match files and folders in the skills directory
+        const match = href.match(/\/(blob|tree)\/[^/]+\/(.+)/);
+        if (!match) continue;
+
+        const filePath = match[2];
+        // Only include items directly in the skills directory
+        if (!filePath.startsWith(skillsDir + '/')) continue;
+
+        const relativePath = filePath.slice(skillsDir.length + 1);
+        const parts = relativePath.split('/');
+        if (parts.length === 0 || !parts[0]) continue;
+
+        // Skill name is the first part (file or folder name)
+        const itemName = parts[0];
+        const isFile = match[1] === 'blob';
+        const isSingleFile = isFile && itemName.endsWith('.md');
+
+        // Skip if it's a file inside a folder (not a direct child)
+        if (parts.length > 1 && isFile) continue;
+
+        const skillName = itemName.replace(/\.md$/, '');
+        const skillPath = skillsDir + '/' + (isSingleFile ? itemName : skillName);
+
+        // Check if we already have this skill
+        if (skills.some(s => s.path === skillPath)) continue;
+
+        skills.push({
+          name: skillName,
+          path: skillPath,
+          isSingleFile,
+          files: isSingleFile
+            ? [{ name: itemName, path: filePath }]
+            : []
+        });
+      }
+
+      return skills;
+    },
+    args: [skillsDir]
+  });
+
+  // Close tab
+  await chrome.tabs.remove(tab.id);
+
+  return results?.[0]?.result || [];
 }
 
 // Handle extension icon click
