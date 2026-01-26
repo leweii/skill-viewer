@@ -160,11 +160,22 @@
 
     const response = await fetch(treeUrl);
 
+    // Handle API failures - try DOM fallback for private repos
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Repository not found');
-      }
-      if (response.status === 403) {
+      if (response.status === 404 || response.status === 403) {
+        // Check if user can see the repo (private but has access)
+        if (isPrivateRepoAccessible()) {
+          const domSkills = extractSkillsFromDOM();
+          if (domSkills.length > 0) {
+            // Mark as private repo mode
+            domSkills.isPrivateRepo = true;
+            return domSkills;
+          }
+        }
+
+        if (response.status === 404) {
+          throw new Error('Repository not found');
+        }
         throw new Error('GitHub rate limit hit');
       }
       throw new Error(`GitHub API error: ${response.status}`);
@@ -251,7 +262,9 @@
       });
     }
 
-    return Array.from(skillMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    const skills = Array.from(skillMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    skills.isPrivateRepo = false;
+    return skills;
   }
 
   // Sidebar rendering functions
