@@ -536,7 +536,7 @@
       html += `
         <div class="sv-privacy-notice sv-privacy-notice-top">
           <p>🔒 Private Repository</p>
-          <p>Content not analyzed. Use Collect to copy skills locally.</p>
+          <p>We respect your privacy — no content is sent for analysis.</p>
         </div>
       `;
     }
