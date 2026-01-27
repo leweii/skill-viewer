@@ -137,6 +137,60 @@
     return potentialDirs;
   }
 
+  async function fetchSkillsFromFolderPage(owner, repo, branch, skillsPath) {
+    // Fetch the skills folder page and extract skill names from the HTML
+    const folderUrl = `https://github.com/${owner}/${repo}/tree/${branch}/${skillsPath}`;
+
+    try {
+      const response = await fetch(folderUrl, { credentials: 'include' });
+      if (!response.ok) return [];
+
+      const html = await response.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const skills = [];
+      const skillNames = new Set();
+
+      // Find all file/folder links in the page
+      const links = doc.querySelectorAll('a[href*="/blob/"], a[href*="/tree/"]');
+
+      for (const link of links) {
+        const href = link.getAttribute('href') || '';
+
+        // Match files/folders directly under skills path
+        // Pattern: /owner/repo/blob|tree/branch/skillsPath/skillName
+        const pattern = new RegExp(`/${owner}/${repo}/(blob|tree)/${branch}/${skillsPath.replace(/\//g, '\\/')}/([^/]+)`);
+        const match = href.match(pattern);
+
+        if (!match) continue;
+
+        const [, type, itemName] = match;
+        const skillName = itemName.replace(/\.md$/, '');
+
+        if (skillNames.has(skillName)) continue;
+        skillNames.add(skillName);
+
+        const isSingleFile = itemName.endsWith('.md');
+        const skillPath = `${skillsPath}/${isSingleFile ? itemName : skillName}`;
+
+        skills.push({
+          name: skillName,
+          path: skillPath,
+          isSingleFile,
+          files: isSingleFile
+            ? [{ name: itemName, path: skillPath }]
+            : [{ name: 'SKILL.md', path: `${skillPath}/SKILL.md` }]
+        });
+      }
+
+      return skills.sort((a, b) => a.name.localeCompare(b.name));
+    } catch (err) {
+      console.error('Failed to fetch skills folder:', err);
+      return [];
+    }
+  }
+
   async function checkForSkills() {
     const repoInfo = parseRepoFromUrl();
 
@@ -197,10 +251,18 @@
           }
 
           // Check if .claude or skills folder exists but skills aren't visible
-          // Show a hint to navigate to the skills folder
+          // Try to fetch the skills folder page directly
           const potentialDirs = detectPotentialSkillsDirs();
+          for (const skillsPath of potentialDirs) {
+            const folderSkills = await fetchSkillsFromFolderPage(owner, repo, branch, skillsPath);
+            if (folderSkills.length > 0) {
+              folderSkills.isPrivateRepo = true;
+              return folderSkills;
+            }
+          }
+
+          // If still no skills found but folder exists, show hint
           if (potentialDirs.length > 0) {
-            // Return empty array with hint flag
             const emptyWithHint = [];
             emptyWithHint.isPrivateRepo = true;
             emptyWithHint.hasSkillsFolder = true;
