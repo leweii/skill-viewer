@@ -685,7 +685,7 @@
       const badges = firstLine.split('|').map(b => b.trim()).filter(b => b);
       html += '<div class="sv-badges">';
       for (const badge of badges) {
-        const isWarning = badge.includes('⚠️') || badge.includes('⚙️');
+        const isWarning = badge.includes('⚠️') || badge.includes('⚙️') || badge.includes('☁️');
         const className = isWarning ? 'sv-badge sv-badge-warning' : 'sv-badge sv-badge-info';
         // Strip markdown bold syntax (**text**) from badge
         const cleanBadge = badge.replace(/\*\*/g, '');
