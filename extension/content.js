@@ -536,7 +536,7 @@
       html += `
         <div class="sv-privacy-notice sv-privacy-notice-top">
           <p>🔒 Private Repository</p>
-          <p>We respect your privacy — no content is sent for analysis.</p>
+          <p>Private means private. We just help you find skills, nothing more.</p>
         </div>
       `;
     }
