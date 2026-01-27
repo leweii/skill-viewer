@@ -391,6 +391,21 @@
     }
   }
 
+  function toggleSidebar() {
+    if (sidebarEl) {
+      sidebarEl.classList.toggle('hidden');
+    }
+  }
+
+  // Listen for toggle message from background script
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === 'TOGGLE_SIDEBAR') {
+      toggleSidebar();
+      sendResponse({ success: true, visible: sidebarEl && !sidebarEl.classList.contains('hidden') });
+    }
+    return true;
+  });
+
   function renderLoading() {
     const content = sidebarEl.querySelector('.sv-content');
     content.innerHTML = `
@@ -450,42 +465,63 @@
       : `Claude Skills (${skills.length})`;
     sidebarEl.querySelector('.sv-header h2').textContent = headerText;
 
-    // For private repos, all skills start collapsed with privacy message
+    // For private repos, show privacy notice at top + compact skill list
     // For public repos, first 2 are expanded with loading spinner
-    content.innerHTML = skills.map((skill, index) => {
-      const isCollapsed = isPrivateRepo || index >= 2;
+    let html = '';
+
+    // Add privacy notice for private repos
+    if (isPrivateRepo) {
+      html += `
+        <div class="sv-privacy-notice sv-privacy-notice-top">
+          <p>🔒 Private Repository</p>
+          <p>Content not analyzed. Use Collect to copy skills locally.</p>
+        </div>
+      `;
+    }
+
+    html += skills.map((skill, index) => {
+      const isCollapsed = index >= 2;
       const isSingleFile = skill.path.endsWith('.md');
       const filePath = isSingleFile ? skill.path : `${skill.path}/SKILL.md`;
       const githubUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${filePath}`;
 
-      const bodyContent = isPrivateRepo
-        ? `<div class="sv-privacy-notice">
-            <p>🔒 This is a private repository.</p>
-            <p>We respect your privacy and won't analyze the content.</p>
-            <a href="${githubUrl}" target="_blank" class="sv-view-link">View on GitHub →</a>
-          </div>`
-        : `<div class="sv-summarizing">
-            <div class="sv-spinner"></div>
-            Loading...
-          </div>`;
+      // Private repo: compact view without expandable body
+      if (isPrivateRepo) {
+        return `
+          <div class="sv-skill sv-skill-compact" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}" data-private="true">
+            <div class="sv-skill-header">
+              <a href="${githubUrl}" target="_blank" class="sv-skill-name sv-skill-link">${escapeHtml(skill.name)}</a>
+              <button class="sv-collect-btn" data-skill="${escapeHtml(skill.name)}" data-path="${escapeHtml(skill.path)}">Collect</button>
+            </div>
+          </div>
+        `;
+      }
 
+      // Public repo: expandable with summary
       return `
-        <div class="sv-skill ${isCollapsed ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}" data-private="${isPrivateRepo}">
+        <div class="sv-skill ${isCollapsed ? 'collapsed' : ''}" data-skill="${escapeHtml(skill.name)}" data-skill-path="${escapeHtml(skill.path)}" data-private="false">
           <div class="sv-skill-header">
             <span class="sv-chevron">▼</span>
             <span class="sv-skill-name">${escapeHtml(skill.name)}</span>
             <button class="sv-collect-btn" data-skill="${escapeHtml(skill.name)}" data-path="${escapeHtml(skill.path)}">Collect</button>
           </div>
           <div class="sv-skill-body">
-            ${bodyContent}
+            <div class="sv-summarizing">
+              <div class="sv-spinner"></div>
+              Loading...
+            </div>
           </div>
         </div>
       `;
     }).join('');
 
-    // Bind collapse toggle
-    content.querySelectorAll('.sv-skill-header').forEach(header => {
+    content.innerHTML = html;
+
+    // Bind collapse toggle (only for public repos with expandable content)
+    content.querySelectorAll('.sv-skill:not(.sv-skill-compact) .sv-skill-header').forEach(header => {
       header.addEventListener('click', (e) => {
+        // Don't toggle if clicking on a link or button
+        if (e.target.closest('a') || e.target.closest('button')) return;
         const skillEl = header.parentElement;
         skillEl.classList.toggle('collapsed');
       });

@@ -163,12 +163,44 @@
   color: #24292f;
 }
 
+.sv-privacy-notice p:last-child {
+  margin-bottom: 0;
+}
+
 .dark .sv-privacy-notice {
   color: #8b949e;
 }
 
 .dark .sv-privacy-notice p:first-child {
   color: #e6edf3;
+}
+
+/* Top privacy notice - compact banner style */
+.sv-privacy-notice-top {
+  background: #fff8c5;
+  border: 1px solid #d4a72c;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.sv-privacy-notice-top p:first-child {
+  color: #6e5600;
+}
+
+.sv-privacy-notice-top p:last-child {
+  color: #6e5600;
+}
+
+.dark .sv-privacy-notice-top {
+  background: #3d3200;
+  border-color: #665200;
+}
+
+.dark .sv-privacy-notice-top p:first-child,
+.dark .sv-privacy-notice-top p:last-child {
+  color: #d4a72c;
 }
 
 /* Skill item */
@@ -216,6 +248,24 @@
 
 .sv-skill-name {
   flex: 1;
+}
+
+/* Compact view for private repos - no expandable body */
+.sv-skill-compact .sv-skill-header {
+  cursor: default;
+}
+
+.sv-skill-compact .sv-skill-link {
+  color: #0969da;
+  text-decoration: none;
+}
+
+.sv-skill-compact .sv-skill-link:hover {
+  text-decoration: underline;
+}
+
+.dark .sv-skill-compact .sv-skill-link {
+  color: #58a6ff;
 }
 
 .sv-skill-body {
