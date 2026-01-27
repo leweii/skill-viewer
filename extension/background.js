@@ -99,10 +99,12 @@ ${skillContent}
 
 Analyze the skill and provide a summary in this exact format:
 
-**Line 1 - Capability badges (only include ones that apply, separated by " | "):**
+**Line 1 - Capability badges (each badge appears AT MOST ONCE, separated by " | "):**
 - ⚠️ Code Execution - ONLY if the skill contains actual executable code (bash commands, scripts, code blocks that will run). Do NOT include this badge just because the skill documentation mentions "code", "bash", or "command" in explanatory text.
 - ⚠️ External Access - if the skill calls external APIs, fetches URLs, or accesses network resources
 - 📁 File Operations - if the skill reads, writes, or modifies files
+
+IMPORTANT: Never repeat the same badge. Each badge can only appear once.
 
 **Line 2+ - Description (2-3 sentences):**
 What does this skill do and when should a developer use it? Keep it practical and scannable.
