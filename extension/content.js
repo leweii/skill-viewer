@@ -593,9 +593,10 @@
     content.querySelectorAll('.sv-collect-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent triggering collapse
-        const skillName = btn.dataset.skill;
         const skillPath = btn.dataset.path;
-        showCollectModal(skillName, skillPath);
+        const skillEl = btn.closest('.sv-skill');
+        const isPrivate = skillEl.dataset.private === 'true';
+        showCollectModal(skillPath, isPrivate);
       });
     });
 
@@ -736,10 +737,28 @@
     setTimeout(() => toast.remove(), 3000);
   }
 
-  function showCollectModal(skillName, skillPath) {
+  function showCollectModal(skillPath, isPrivate) {
     // Remove existing modal
     const existing = document.querySelector('.sv-modal-overlay');
     if (existing) existing.remove();
+
+    const { repoInfo } = window.__skillViewerRepoInfo || {};
+    if (!repoInfo) {
+      showToast('Error: Repository info not available', true);
+      return;
+    }
+
+    const command = isPrivate
+      ? `git clone https://github.com/${repoInfo.owner}/${repoInfo.repo}.git`
+      : `npx skills add ${repoInfo.owner}/${repoInfo.repo}`;
+
+    const description = isPrivate
+      ? 'Clone this private repository to access the skills:'
+      : 'This command will be copied to your clipboard:';
+
+    const hint = isPrivate
+      ? 'After cloning, you can manually copy skills from the .claude/skills/ or skills/ directory.'
+      : 'Paste and run in your terminal to add all skills from this repository.';
 
     const overlay = document.createElement('div');
     overlay.className = 'sv-modal-overlay';
@@ -754,99 +773,49 @@
 
     overlay.innerHTML = `
       <div class="sv-modal ${isDark ? 'dark' : ''}">
-        <h3 class="sv-modal-title">Select target path</h3>
-        <p class="sv-modal-desc">Command will be copied to clipboard. Paste and run in terminal.</p>
-          <div class="sv-radio-group">
-            <label class="sv-radio-option">
-              <input type="radio" name="sv-path" value="global" checked>
-              <span class="sv-radio-label">
-                ~/.claude/skills/
-                <span class="sv-radio-hint">(Global)</span>
-              </span>
-            </label>
-            <label class="sv-radio-option">
-              <input type="radio" name="sv-path" value="project">
-              <span class="sv-radio-label">
-                ./.claude/skills/
-                <span class="sv-radio-hint">(Project)</span>
-              </span>
-            </label>
-            <label class="sv-radio-option">
-              <input type="radio" name="sv-path" value="custom">
-              <span class="sv-radio-label">Custom</span>
-            </label>
-            <div class="sv-custom-path">
-              <input type="text" placeholder="Enter custom path..." value="">
-            </div>
-          </div>
-          <div class="sv-modal-buttons">
-            <button class="sv-modal-btn cancel">Cancel</button>
-            <button class="sv-modal-btn primary confirm">Copy</button>
-          </div>
+        <h3 class="sv-modal-title">${isPrivate ? 'Clone Private Repository 🔒' : 'Add Skills'}</h3>
+        <p class="sv-modal-desc">${description}</p>
+        <div style="background: ${isDark ? '#1c2128' : '#f6f8fa'}; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 13px; margin: 12px 0; word-break: break-all;">
+          ${command}
         </div>
-      `;
+        <p class="sv-modal-desc" style="font-size: 12px; margin-top: 8px;">${hint}</p>
+        <div class="sv-modal-buttons">
+          <button class="sv-modal-btn cancel">Cancel</button>
+          <button class="sv-modal-btn primary confirm">Copy Command</button>
+        </div>
+      </div>
+    `;
 
-      document.body.appendChild(overlay);
+    document.body.appendChild(overlay);
 
-      // Handle radio change for custom path visibility
-      const radios = overlay.querySelectorAll('input[name="sv-path"]');
-      const customPathDiv = overlay.querySelector('.sv-custom-path');
+    // Handle cancel
+    overlay.querySelector('.cancel').addEventListener('click', () => {
+      overlay.remove();
+    });
 
-      radios.forEach(radio => {
-        radio.addEventListener('change', () => {
-          if (radio.value === 'custom' && radio.checked) {
-            customPathDiv.classList.add('visible');
-          } else {
-            customPathDiv.classList.remove('visible');
-          }
-        });
-      });
-
-      // Handle cancel
-      overlay.querySelector('.cancel').addEventListener('click', () => {
+    // Handle click outside modal
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
         overlay.remove();
-      });
+      }
+    });
 
-      // Handle click outside modal
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          overlay.remove();
-        }
-      });
-
-      // Handle confirm
-      overlay.querySelector('.confirm').addEventListener('click', () => {
-        const selected = overlay.querySelector('input[name="sv-path"]:checked').value;
-        let targetPath;
-
-        if (selected === 'global') {
-          targetPath = '~/.claude/skills/';
-        } else if (selected === 'project') {
-          targetPath = './.claude/skills/';
-        } else {
-          targetPath = overlay.querySelector('.sv-custom-path input').value.trim();
-          if (!targetPath) {
-            targetPath = '~/.claude/skills/';
-          }
-          if (!targetPath.endsWith('/')) {
-            targetPath += '/';
-          }
-        }
-
-        generateAndCopyCommand(skillName, skillPath, targetPath);
-        overlay.remove();
-      });
+    // Handle confirm
+    overlay.querySelector('.confirm').addEventListener('click', () => {
+      generateAndCopyCommand(skillPath, isPrivate);
+      overlay.remove();
+    });
   }
 
-  function generateAndCopyCommand(skillName, skillPath, targetPath) {
-    const { repoInfo, branch } = window.__skillViewerRepoInfo || {};
+  function generateAndCopyCommand(skillPath, isPrivate) {
+    const { repoInfo } = window.__skillViewerRepoInfo || {};
 
     if (!repoInfo) {
       showToast('Error: Repository info not available', true);
       return;
     }
 
-    // Track collect event
+    // Track collect event (skillPath indicates which skill triggered the collection)
     fetch(CONFIG.API_COLLECT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -856,13 +825,10 @@
       })
     }).catch(() => {}); // Fire and forget
 
-    // Generate degit command
-    // Format: npx degit "owner/repo/path#branch" targetPath/skillName
-    // Quote the source path to prevent shell interpretation of #
-    const sourcePath = `${repoInfo.owner}/${repoInfo.repo}/${skillPath}#${branch}`;
-    // Replace ~ with $HOME so tilde expansion works inside double quotes
-    const destPath = `${targetPath}${skillName}`.replace(/^~(?=\/|$)/, '$HOME');
-    const command = `npx degit "${sourcePath}" "${destPath}"`;
+    // Generate appropriate command based on repo type
+    const command = isPrivate
+      ? `git clone https://github.com/${repoInfo.owner}/${repoInfo.repo}.git`
+      : `npx skills add ${repoInfo.owner}/${repoInfo.repo}`;
 
     // Copy to clipboard
     navigator.clipboard.writeText(command).then(() => {

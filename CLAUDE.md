@@ -37,7 +37,9 @@ There is no build step - this is vanilla JavaScript loaded directly by Chrome.
 
 **GitHub SPA handling**: content.js uses multiple detection methods for navigation: `turbo:load`, `pjax:end` events, and a MutationObserver fallback watching for URL changes.
 
-**Skill collection**: The "Collect" button generates `npx degit` commands to copy skills to local directories (`~/.claude/skills/` or `./.claude/skills/`).
+**Skill collection**: The "Collect" button generates commands to add skills:
+- Public repos: `npx skills add owner/repo` (adds all skills from repository)
+- Private repos: `git clone https://github.com/owner/repo.git` (clone first, then manually copy skills)
 
 ### Storage Schema (chrome.storage.local)
 
