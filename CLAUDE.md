@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Skill Viewer is a Chrome extension that displays Claude Code skills found in GitHub repositories. When visiting any GitHub repo, it shows a sidebar listing skills from `.claude/skills/` or `skills/` directories, with AI-generated summaries.
+Skill Viewer is a Chrome extension that displays AI coding skills found in GitHub repositories. It supports multiple platforms (Claude, Gemini, OpenCode, Codex, Cursor) and scans for skills in `.claude/skills/`, `.gemini/skills/`, `.opencode/skills/`, `.codex/skills/`, `.cursor/skills/`, or `skills/` directories, with AI-generated summaries.
 
 ## Development Setup
 
@@ -53,6 +53,7 @@ There is no build step - this is vanilla JavaScript loaded directly by Chrome.
   summaryLanguage: string,  // same codes as uiLanguage
   autoOpen: boolean,
   darkMode: boolean,
+  defaultPlatform: 'claude' | 'gemini' | 'opencode' | 'codex' | 'cursor',
   sidebarWidth: number,     // 250-600px
   summary_${repo}_${skill}_${lang}: { summary: string, timestamp: number }
 }

@@ -1,10 +1,10 @@
 // Internationalization strings
 const i18n = {
   "en": {
-    "title": "Claude Skills",
+    "title": "AI Skills",
     "settings": "Settings",
     "scanning": "Scanning for skills...",
-    "noSkills": "No Claude skills found in this repository.",
+    "noSkills": "No AI skills found in this repository.",
     "viewFull": "View Full Skill",
     "viewOnGitHub": "View on GitHub",
     "loading": "Loading...",
@@ -23,6 +23,7 @@ const i18n = {
     "summaryLanguage": "Summary Language",
     "autoOpen": "Auto-open sidebar when skills are found",
     "darkMode": "Dark mode",
+    "defaultPlatform": "Default Platform",
     "getKeyAt": "Get your key at",
     "collect": "Collect",
     "selectTargetPath": "Select target path",
@@ -53,10 +54,10 @@ const i18n = {
     "pleaseLoginFirst": "Please login first"
   },
   "zh-CN": {
-    "title": "Claude 技能",
+    "title": "AI 技能",
     "settings": "设置",
     "scanning": "正在扫描技能...",
-    "noSkills": "此仓库未找到 Claude 技能。",
+    "noSkills": "此仓库未找到 AI 技能。",
     "viewFull": "查看完整技能",
     "viewOnGitHub": "在 GitHub 上查看",
     "loading": "加载中...",
@@ -75,6 +76,7 @@ const i18n = {
     "summaryLanguage": "摘要语言",
     "autoOpen": "发现技能时自动打开侧边栏",
     "darkMode": "深色模式",
+    "defaultPlatform": "默认平台",
     "getKeyAt": "获取密钥",
     "collect": "采集",
     "selectTargetPath": "选择目标路径",
@@ -105,10 +107,10 @@ const i18n = {
     "pleaseLoginFirst": "请先登录"
   },
   "zh-TW": {
-    "title": "Claude 技能",
+    "title": "AI 技能",
     "settings": "設定",
     "scanning": "正在掃描技能...",
-    "noSkills": "此倉庫未找到 Claude 技能。",
+    "noSkills": "此倉庫未找到 AI 技能。",
     "viewFull": "查看完整技能",
     "viewOnGitHub": "在 GitHub 上查看",
     "loading": "載入中...",
@@ -127,6 +129,7 @@ const i18n = {
     "summaryLanguage": "摘要語言",
     "autoOpen": "發現技能時自動開啟側邊欄",
     "darkMode": "深色模式",
+    "defaultPlatform": "預設平台",
     "getKeyAt": "取得金鑰",
     "collect": "採集",
     "selectTargetPath": "選擇目標路徑",
@@ -157,10 +160,10 @@ const i18n = {
     "pleaseLoginFirst": "請先登入"
   },
   "ja": {
-    "title": "Claude スキル",
+    "title": "AI スキル",
     "settings": "設定",
     "scanning": "スキルをスキャン中...",
-    "noSkills": "このリポジトリにClaudeスキルは見つかりませんでした。",
+    "noSkills": "このリポジトリにAIスキルは見つかりませんでした。",
     "viewFull": "完全なスキルを表示",
     "viewOnGitHub": "GitHubで表示",
     "loading": "読み込み中...",
@@ -179,6 +182,7 @@ const i18n = {
     "summaryLanguage": "要約言語",
     "autoOpen": "スキル検出時にサイドバーを自動で開く",
     "darkMode": "ダークモード",
+    "defaultPlatform": "デフォルトプラットフォーム",
     "getKeyAt": "キーを取得",
     "collect": "収集",
     "selectTargetPath": "保存先を選択",
@@ -209,10 +213,10 @@ const i18n = {
     "pleaseLoginFirst": "まずログインしてください"
   },
   "ko": {
-    "title": "Claude 스킬",
+    "title": "AI 스킬",
     "settings": "설정",
     "scanning": "스킬 스캔 중...",
-    "noSkills": "이 저장소에서 Claude 스킬을 찾을 수 없습니다.",
+    "noSkills": "이 저장소에서 AI 스킬을 찾을 수 없습니다.",
     "viewFull": "전체 스킬 보기",
     "viewOnGitHub": "GitHub에서 보기",
     "loading": "로딩 중...",
@@ -231,6 +235,7 @@ const i18n = {
     "summaryLanguage": "요약 언어",
     "autoOpen": "스킬 발견 시 사이드바 자동 열기",
     "darkMode": "다크 모드",
+    "defaultPlatform": "기본 플랫폼",
     "getKeyAt": "키 받기",
     "collect": "수집",
     "selectTargetPath": "대상 경로 선택",
@@ -261,10 +266,10 @@ const i18n = {
     "pleaseLoginFirst": "먼저 로그인해 주세요"
   },
   "es": {
-    "title": "Habilidades Claude",
+    "title": "Habilidades AI",
     "settings": "Configuracion",
     "scanning": "Escaneando habilidades...",
-    "noSkills": "No se encontraron habilidades Claude en este repositorio.",
+    "noSkills": "No se encontraron habilidades AI en este repositorio.",
     "viewFull": "Ver Habilidad Completa",
     "viewOnGitHub": "Ver en GitHub",
     "loading": "Cargando...",
@@ -283,6 +288,7 @@ const i18n = {
     "summaryLanguage": "Idioma de Resumen",
     "autoOpen": "Abrir barra lateral automaticamente al encontrar habilidades",
     "darkMode": "Modo oscuro",
+    "defaultPlatform": "Plataforma predeterminada",
     "getKeyAt": "Obten tu clave en",
     "collect": "Recolectar",
     "selectTargetPath": "Seleccionar ruta destino",
@@ -313,10 +319,10 @@ const i18n = {
     "pleaseLoginFirst": "Por favor inicia sesión primero"
   },
   "fr": {
-    "title": "Competences Claude",
+    "title": "Competences AI",
     "settings": "Parametres",
     "scanning": "Recherche de competences...",
-    "noSkills": "Aucune competence Claude trouvee dans ce depot.",
+    "noSkills": "Aucune competence AI trouvee dans ce depot.",
     "viewFull": "Voir la Competence Complete",
     "viewOnGitHub": "Voir sur GitHub",
     "loading": "Chargement...",
@@ -335,6 +341,7 @@ const i18n = {
     "summaryLanguage": "Langue du Resume",
     "autoOpen": "Ouvrir automatiquement la barre laterale quand des competences sont trouvees",
     "darkMode": "Mode sombre",
+    "defaultPlatform": "Plateforme par defaut",
     "getKeyAt": "Obtenez votre cle sur",
     "collect": "Collecter",
     "selectTargetPath": "Selectionner le chemin cible",
@@ -365,10 +372,10 @@ const i18n = {
     "pleaseLoginFirst": "Veuillez vous connecter d'abord"
   },
   "de": {
-    "title": "Claude Fahigkeiten",
+    "title": "AI Fahigkeiten",
     "settings": "Einstellungen",
     "scanning": "Suche nach Fahigkeiten...",
-    "noSkills": "Keine Claude-Fahigkeiten in diesem Repository gefunden.",
+    "noSkills": "Keine AI-Fahigkeiten in diesem Repository gefunden.",
     "viewFull": "Vollstandige Fahigkeit anzeigen",
     "viewOnGitHub": "Auf GitHub anzeigen",
     "loading": "Laden...",
@@ -387,6 +394,7 @@ const i18n = {
     "summaryLanguage": "Zusammenfassungssprache",
     "autoOpen": "Seitenleiste automatisch offnen wenn Fahigkeiten gefunden werden",
     "darkMode": "Dunkler Modus",
+    "defaultPlatform": "Standard-Plattform",
     "getKeyAt": "Holen Sie sich Ihren Schlussel bei",
     "collect": "Sammeln",
     "selectTargetPath": "Zielpfad auswahlen",

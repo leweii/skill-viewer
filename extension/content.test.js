@@ -5,7 +5,7 @@
 
 // Extract the skill parsing logic from fetchSkills for testing
 function parseSkillsFromTree(tree) {
-  const skillPatterns = ['.claude/skills/', 'skills/'];
+  const skillPatterns = ['.claude/skills/', '.gemini/skills/', '.opencode/skills/', '.codex/skills/', '.cursor/skills/', 'skills/'];
   const skillMap = new Map();
 
   for (const item of tree) {
@@ -204,6 +204,52 @@ test('handles deeply nested paths within skill directory', () => {
   assertEqual(skills.length, 1, 'Should find 1 skill');
   assertEqual(skills[0].files.length, 2);
   assertEqual(skills[0].files[1].name, 'src/lib/nested/file.js');
+});
+
+test('detects skill at .opencode/skills/skill-name/SKILL.md', () => {
+  const tree = [
+    { type: 'blob', path: '.opencode/skills/my-opencode-skill/SKILL.md' }
+  ];
+  const skills = parseSkillsFromTree(tree);
+
+  assertEqual(skills.length, 1, 'Should find 1 skill');
+  assertEqual(skills[0].name, 'my-opencode-skill');
+  assertEqual(skills[0].path, '.opencode/skills/my-opencode-skill');
+});
+
+test('detects skill at .cursor/skills/skill-name/SKILL.md', () => {
+  const tree = [
+    { type: 'blob', path: '.cursor/skills/cursor-skill/SKILL.md' }
+  ];
+  const skills = parseSkillsFromTree(tree);
+
+  assertEqual(skills.length, 1, 'Should find 1 skill');
+  assertEqual(skills[0].name, 'cursor-skill');
+  assertEqual(skills[0].path, '.cursor/skills/cursor-skill');
+});
+
+test('detects skills across multiple platforms', () => {
+  const tree = [
+    { type: 'blob', path: '.claude/skills/claude-skill/SKILL.md' },
+    { type: 'blob', path: '.opencode/skills/opencode-skill/SKILL.md' },
+    { type: 'blob', path: '.gemini/skills/gemini-skill/SKILL.md' },
+    { type: 'blob', path: '.codex/skills/codex-skill/SKILL.md' },
+    { type: 'blob', path: '.cursor/skills/cursor-skill/SKILL.md' }
+  ];
+  const skills = parseSkillsFromTree(tree);
+
+  assertEqual(skills.length, 5, 'Should find 5 skills from different platforms');
+});
+
+test('detects nested skill under .opencode/skills/', () => {
+  const tree = [
+    { type: 'blob', path: 'packages/app/.opencode/skills/nested-oc-skill/SKILL.md' }
+  ];
+  const skills = parseSkillsFromTree(tree);
+
+  assertEqual(skills.length, 1, 'Should find 1 nested skill');
+  assertEqual(skills[0].name, 'packages/app/nested-oc-skill');
+  assertEqual(skills[0].path, 'packages/app/.opencode/skills/nested-oc-skill');
 });
 
 // Summary

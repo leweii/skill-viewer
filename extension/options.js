@@ -359,7 +359,8 @@ const i18n = {
     "uiLanguage": "Interface Language",
     "summaryLanguage": "Summary Language",
     "autoOpen": "Auto-open sidebar when skills are found",
-    "darkMode": "Dark mode"
+    "darkMode": "Dark mode",
+    "defaultPlatform": "Default Platform"
   },
   "zh-CN": {
     "title": "Skill Viewer 设置",
@@ -379,7 +380,8 @@ const i18n = {
     "uiLanguage": "界面语言",
     "summaryLanguage": "摘要语言",
     "autoOpen": "发现技能时自动打开侧边栏",
-    "darkMode": "深色模式"
+    "darkMode": "深色模式",
+    "defaultPlatform": "默认平台"
   },
   "zh-TW": {
     "title": "Skill Viewer 設定",
@@ -399,7 +401,8 @@ const i18n = {
     "uiLanguage": "介面語言",
     "summaryLanguage": "摘要語言",
     "autoOpen": "發現技能時自動開啟側邊欄",
-    "darkMode": "深色模式"
+    "darkMode": "深色模式",
+    "defaultPlatform": "預設平台"
   },
   "ja": {
     "title": "Skill Viewer 設定",
@@ -419,7 +422,8 @@ const i18n = {
     "uiLanguage": "インターフェース言語",
     "summaryLanguage": "要約言語",
     "autoOpen": "スキル検出時にサイドバーを自動で開く",
-    "darkMode": "ダークモード"
+    "darkMode": "ダークモード",
+    "defaultPlatform": "デフォルトプラットフォーム"
   },
   "ko": {
     "title": "Skill Viewer 설정",
@@ -439,7 +443,8 @@ const i18n = {
     "uiLanguage": "인터페이스 언어",
     "summaryLanguage": "요약 언어",
     "autoOpen": "스킬 발견 시 사이드바 자동 열기",
-    "darkMode": "다크 모드"
+    "darkMode": "다크 모드",
+    "defaultPlatform": "기본 플랫폼"
   },
   "es": {
     "title": "Configuracion de Skill Viewer",
@@ -459,7 +464,8 @@ const i18n = {
     "uiLanguage": "Idioma de Interfaz",
     "summaryLanguage": "Idioma de Resumen",
     "autoOpen": "Abrir barra lateral automaticamente al encontrar habilidades",
-    "darkMode": "Modo oscuro"
+    "darkMode": "Modo oscuro",
+    "defaultPlatform": "Plataforma predeterminada"
   },
   "fr": {
     "title": "Parametres Skill Viewer",
@@ -479,7 +485,8 @@ const i18n = {
     "uiLanguage": "Langue de l'Interface",
     "summaryLanguage": "Langue du Resume",
     "autoOpen": "Ouvrir automatiquement la barre laterale quand des competences sont trouvees",
-    "darkMode": "Mode sombre"
+    "darkMode": "Mode sombre",
+    "defaultPlatform": "Plateforme par defaut"
   },
   "de": {
     "title": "Skill Viewer Einstellungen",
@@ -499,7 +506,8 @@ const i18n = {
     "uiLanguage": "Oberflachensprache",
     "summaryLanguage": "Zusammenfassungssprache",
     "autoOpen": "Seitenleiste automatisch offnen wenn Fahigkeiten gefunden werden",
-    "darkMode": "Dunkler Modus"
+    "darkMode": "Dunkler Modus",
+    "defaultPlatform": "Standard-Plattform"
   }
 };
 
@@ -521,6 +529,7 @@ function updateUI() {
   document.getElementById('label-summary-language').textContent = t('summaryLanguage');
   document.getElementById('label-auto-open').textContent = t('autoOpen');
   document.getElementById('label-dark-mode').textContent = t('darkMode');
+  document.getElementById('label-default-platform').textContent = t('defaultPlatform');
 
   // Update key hint
   const provider = document.querySelector('input[name="provider"]:checked').value;
@@ -539,6 +548,7 @@ async function init() {
     'summaryLanguage',
     'autoOpen',
     'darkMode',
+    'defaultPlatform',
     // Legacy
     'geminiApiKey'
   ]);
@@ -566,6 +576,9 @@ async function init() {
   document.getElementById('auto-open').checked = settings.autoOpen !== false;
   document.getElementById('dark-mode').checked = settings.darkMode === true;
 
+  // Set default platform
+  document.getElementById('default-platform').value = settings.defaultPlatform || 'claude';
+
   // Update UI text
   updateUI();
 
@@ -579,6 +592,7 @@ async function init() {
   document.getElementById('save-btn').addEventListener('click', saveSettings);
   document.getElementById('auto-open').addEventListener('change', saveCheckboxes);
   document.getElementById('dark-mode').addEventListener('change', saveCheckboxes);
+  document.getElementById('default-platform').addEventListener('change', saveCheckboxes);
 }
 
 async function onProviderChange(e) {
@@ -682,7 +696,8 @@ async function saveSettings() {
 async function saveCheckboxes() {
   const autoOpen = document.getElementById('auto-open').checked;
   const darkMode = document.getElementById('dark-mode').checked;
-  await chrome.storage.local.set({ autoOpen, darkMode });
+  const defaultPlatform = document.getElementById('default-platform').value;
+  await chrome.storage.local.set({ autoOpen, darkMode, defaultPlatform });
 }
 
 function showStatus(message, type) {

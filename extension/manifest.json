@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Skill Viewer",
-  "version": "1.9.1",
-  "description": "View Claude Code skills on GitHub with AI-powered summaries",
+  "version": "2.0.0",
+  "description": "View AI coding skills on GitHub with AI-powered summaries. Supports Claude, Gemini, OpenCode, Codex, and Cursor.",
   "permissions": [
     "storage",
     "activeTab",

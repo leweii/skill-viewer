@@ -80,12 +80,14 @@
 
       const filePath = skillMatch[2];
 
-      // Match .claude/skills/ or skills/ patterns
+      // Match platform skills/ patterns
       let skillDir = null;
-      if (filePath.includes('.claude/skills/')) {
-        skillDir = '.claude/skills/';
-      } else if (filePath.includes('skills/')) {
-        skillDir = 'skills/';
+      const skillDirPatterns = ['.claude/skills/', '.gemini/skills/', '.opencode/skills/', '.codex/skills/', '.cursor/skills/', 'skills/'];
+      for (const pattern of skillDirPatterns) {
+        if (filePath.includes(pattern)) {
+          skillDir = pattern;
+          break;
+        }
       }
 
       if (!skillDir) continue;
@@ -124,13 +126,22 @@
     const links = document.querySelectorAll('a[href*="/tree/"]');
     const potentialDirs = [];
 
+    const platformFolders = [
+      { pattern: /\/tree\/[^/]+\/\.claude$/, path: '.claude/skills' },
+      { pattern: /\/tree\/[^/]+\/\.gemini$/, path: '.gemini/skills' },
+      { pattern: /\/tree\/[^/]+\/\.opencode$/, path: '.opencode/skills' },
+      { pattern: /\/tree\/[^/]+\/\.codex$/, path: '.codex/skills' },
+      { pattern: /\/tree\/[^/]+\/\.cursor$/, path: '.cursor/skills' },
+      { pattern: /\/tree\/[^/]+\/skills$/, path: 'skills' }
+    ];
+
     for (const link of links) {
       const href = link.getAttribute('href') || '';
-      // Match .claude folder or skills folder at root
-      if (href.match(/\/tree\/[^/]+\/\.claude$/)) {
-        potentialDirs.push('.claude/skills');
-      } else if (href.match(/\/tree\/[^/]+\/skills$/)) {
-        potentialDirs.push('skills');
+      for (const { pattern, path } of platformFolders) {
+        if (href.match(pattern)) {
+          potentialDirs.push(path);
+          break;
+        }
       }
     }
 
@@ -284,7 +295,7 @@
 
     // Find skills in .claude/skills/ or skills/ at any depth
     // Patterns: starts with or contains /.claude/skills/ or /skills/
-    const skillPatterns = ['.claude/skills/', 'skills/'];
+    const skillPatterns = ['.claude/skills/', '.gemini/skills/', '.opencode/skills/', '.codex/skills/', '.cursor/skills/', 'skills/'];
     const skillMap = new Map();
 
     for (const item of tree) {
@@ -377,7 +388,7 @@
     sidebarEl.innerHTML = `
       <div class="sv-resize-handle"></div>
       <div class="sv-header">
-        <h2>Claude Skills</h2>
+        <h2>AI Skills</h2>
         <button class="sv-close-btn" title="Close">✕</button>
       </div>
       <div class="sv-content"></div>
@@ -501,7 +512,7 @@
     const folderUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/tree/${branch}/${skillsFolderPath}`;
 
     // Update header
-    sidebarEl.querySelector('.sv-header h2').textContent = 'Claude Skills 🔒';
+    sidebarEl.querySelector('.sv-header h2').textContent = 'AI Skills 🔒';
 
     content.innerHTML = `
       <div class="sv-privacy-notice">
@@ -523,8 +534,8 @@
 
     // Update header with count and private indicator
     const headerText = isPrivateRepo
-      ? `Claude Skills (${skills.length}) 🔒`
-      : `Claude Skills (${skills.length})`;
+      ? `AI Skills (${skills.length}) 🔒`
+      : `AI Skills (${skills.length})`;
     sidebarEl.querySelector('.sv-header h2').textContent = headerText;
 
     // For private repos, show privacy notice at top + compact skill list
@@ -757,7 +768,7 @@
       : 'This command will be copied to your clipboard:';
 
     const hint = isPrivate
-      ? 'After cloning, you can manually copy skills from the .claude/skills/ or skills/ directory.'
+      ? 'After cloning, you can manually copy skills from the skills directory (e.g. .claude/skills/, .opencode/skills/).'
       : 'Paste and run in your terminal to add all skills from this repository.';
 
     const overlay = document.createElement('div');
