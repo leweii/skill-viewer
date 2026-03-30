@@ -387,12 +387,10 @@ async function fetchSkillContent(url) {
   return await response.text();
 }
 
-// Handle extension icon click - toggle sidebar on GitHub pages
+// Handle extension icon click - activate or toggle sidebar on GitHub pages
 chrome.action.onClicked.addListener((tab) => {
-  // Only toggle on GitHub pages
   if (tab.url && tab.url.includes('github.com')) {
-    chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_SIDEBAR' }).catch(() => {
-      // Content script not loaded, open options instead
+    chrome.tabs.sendMessage(tab.id, { type: 'ACTIVATE' }).catch(() => {
       chrome.runtime.openOptionsPage();
     });
   } else {
