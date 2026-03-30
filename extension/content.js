@@ -491,13 +491,6 @@
     }
   }
 
-  function toggleSidebar() {
-    if (sidebarEl) {
-      sidebarEl.classList.toggle('hidden');
-    }
-  }
-
-
   function renderLoading() {
     const content = sidebarEl.querySelector('.sv-content');
     content.innerHTML = `
