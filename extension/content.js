@@ -421,14 +421,6 @@
       </div>
     `;
 
-    // Load saved width and dark mode
-    chrome.storage.local.get(['darkMode', 'sidebarWidth'], (settings) => {
-      if (settings.darkMode) sidebarEl.classList.add('dark');
-      if (settings.sidebarWidth) {
-        sidebarEl.style.width = settings.sidebarWidth + 'px';
-      }
-    });
-
     document.body.appendChild(sidebarEl);
 
     // Bind close button
@@ -436,19 +428,24 @@
       sidebarEl.classList.add('hidden');
     });
 
-    // Load and reflect current autoLoad state
+    // Load saved width, dark mode, and autoLoad in one read to avoid race conditions
     const autoloadBtn = sidebarEl.querySelector('.sv-autoload-btn');
-    chrome.storage.local.get(['autoLoad'], (settings) => {
-      if (settings.autoLoad === true) autoloadBtn.classList.add('active');
+    let autoLoadEnabled = false;
+
+    chrome.storage.local.get(['darkMode', 'sidebarWidth', 'autoLoad'], (settings) => {
+      if (settings.darkMode) sidebarEl.classList.add('dark');
+      if (settings.sidebarWidth) {
+        sidebarEl.style.width = settings.sidebarWidth + 'px';
+      }
+      autoLoadEnabled = settings.autoLoad === true;
+      autoloadBtn.classList.toggle('active', autoLoadEnabled);
     });
 
-    // Toggle autoLoad flag only — no other side effects
+    // Toggle autoLoad flag only — use local variable to avoid async race on rapid clicks
     autoloadBtn.addEventListener('click', () => {
-      chrome.storage.local.get(['autoLoad'], (settings) => {
-        const next = !(settings.autoLoad === true);
-        chrome.storage.local.set({ autoLoad: next });
-        autoloadBtn.classList.toggle('active', next);
-      });
+      autoLoadEnabled = !autoLoadEnabled;
+      chrome.storage.local.set({ autoLoad: autoLoadEnabled });
+      autoloadBtn.classList.toggle('active', autoLoadEnabled);
     });
 
     // Bind settings link
