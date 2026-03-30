@@ -10,10 +10,37 @@
   let currentRepo = null;
   let sidebarEl = null;
 
-  // Initialize
-  init();
+  // Register ACTIVATE listener before anything else
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === 'ACTIVATE') {
+      if (window.__skillViewerInitialized) {
+        // Already initialized — just toggle sidebar visibility
+        if (sidebarEl) {
+          sidebarEl.classList.toggle('hidden');
+        }
+      } else {
+        init();
+      }
+      sendResponse({ success: true });
+    }
+    if (request.type === 'TOGGLE_SIDEBAR') {
+      if (sidebarEl) {
+        sidebarEl.classList.toggle('hidden');
+      }
+      sendResponse({ success: true, visible: sidebarEl && !sidebarEl.classList.contains('hidden') });
+    }
+    return true;
+  });
+
+  // Initialize only if autoLoad is enabled
+  chrome.storage.local.get(['autoLoad'], (settings) => {
+    if (settings.autoLoad === true) {
+      init();
+    }
+  });
 
   function init() {
+    window.__skillViewerInitialized = true;
     // Check on page load
     checkForSkills();
 
@@ -470,14 +497,6 @@
     }
   }
 
-  // Listen for toggle message from background script
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === 'TOGGLE_SIDEBAR') {
-      toggleSidebar();
-      sendResponse({ success: true, visible: sidebarEl && !sidebarEl.classList.contains('hidden') });
-    }
-    return true;
-  });
 
   function renderLoading() {
     const content = sidebarEl.querySelector('.sv-content');
