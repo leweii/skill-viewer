@@ -23,12 +23,6 @@
       }
       sendResponse({ success: true });
     }
-    if (request.type === 'TOGGLE_SIDEBAR') {
-      if (sidebarEl) {
-        sidebarEl.classList.toggle('hidden');
-      }
-      sendResponse({ success: true, visible: sidebarEl && !sidebarEl.classList.contains('hidden') });
-    }
     return true;
   });
 
