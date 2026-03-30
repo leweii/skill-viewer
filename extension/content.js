@@ -14,9 +14,11 @@
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === 'ACTIVATE') {
       if (window.__skillViewerInitialized) {
-        // Already initialized — just toggle sidebar visibility
+        // Already initialized — toggle sidebar or re-check if no sidebar exists
         if (sidebarEl) {
           sidebarEl.classList.toggle('hidden');
+        } else {
+          checkForSkills();
         }
       } else {
         init();

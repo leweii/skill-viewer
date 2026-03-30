@@ -52,6 +52,7 @@ There is no build step - this is vanilla JavaScript loaded directly by Chrome.
   uiLanguage: 'en' | 'zh-CN' | 'zh-TW' | 'ja' | 'ko' | 'es' | 'fr' | 'de',
   summaryLanguage: string,  // same codes as uiLanguage
   autoOpen: boolean,
+  autoLoad: boolean,     // default false — if false, extension only activates on icon click
   darkMode: boolean,
   defaultPlatform: 'claude' | 'gemini' | 'opencode' | 'codex' | 'cursor',
   sidebarWidth: number,     // 250-600px
