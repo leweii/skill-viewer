@@ -359,6 +359,7 @@ const i18n = {
     "uiLanguage": "Interface Language",
     "summaryLanguage": "Summary Language",
     "autoOpen": "Auto-open sidebar when skills are found",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "Dark mode",
     "defaultPlatform": "Default Platform"
   },
@@ -380,6 +381,7 @@ const i18n = {
     "uiLanguage": "界面语言",
     "summaryLanguage": "摘要语言",
     "autoOpen": "发现技能时自动打开侧边栏",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "深色模式",
     "defaultPlatform": "默认平台"
   },
@@ -401,6 +403,7 @@ const i18n = {
     "uiLanguage": "介面語言",
     "summaryLanguage": "摘要語言",
     "autoOpen": "發現技能時自動開啟側邊欄",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "深色模式",
     "defaultPlatform": "預設平台"
   },
@@ -422,6 +425,7 @@ const i18n = {
     "uiLanguage": "インターフェース言語",
     "summaryLanguage": "要約言語",
     "autoOpen": "スキル検出時にサイドバーを自動で開く",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "ダークモード",
     "defaultPlatform": "デフォルトプラットフォーム"
   },
@@ -443,6 +447,7 @@ const i18n = {
     "uiLanguage": "인터페이스 언어",
     "summaryLanguage": "요약 언어",
     "autoOpen": "스킬 발견 시 사이드바 자동 열기",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "다크 모드",
     "defaultPlatform": "기본 플랫폼"
   },
@@ -464,6 +469,7 @@ const i18n = {
     "uiLanguage": "Idioma de Interfaz",
     "summaryLanguage": "Idioma de Resumen",
     "autoOpen": "Abrir barra lateral automaticamente al encontrar habilidades",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "Modo oscuro",
     "defaultPlatform": "Plataforma predeterminada"
   },
@@ -485,6 +491,7 @@ const i18n = {
     "uiLanguage": "Langue de l'Interface",
     "summaryLanguage": "Langue du Resume",
     "autoOpen": "Ouvrir automatiquement la barre laterale quand des competences sont trouvees",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "Mode sombre",
     "defaultPlatform": "Plateforme par defaut"
   },
@@ -506,6 +513,7 @@ const i18n = {
     "uiLanguage": "Oberflachensprache",
     "summaryLanguage": "Zusammenfassungssprache",
     "autoOpen": "Seitenleiste automatisch offnen wenn Fahigkeiten gefunden werden",
+    "autoLoad": "Auto-scan for skills when opening a page",
     "darkMode": "Dunkler Modus",
     "defaultPlatform": "Standard-Plattform"
   }
@@ -528,6 +536,7 @@ function updateUI() {
   document.getElementById('label-ui-language').textContent = t('uiLanguage');
   document.getElementById('label-summary-language').textContent = t('summaryLanguage');
   document.getElementById('label-auto-open').textContent = t('autoOpen');
+  document.getElementById('label-auto-load').textContent = t('autoLoad');
   document.getElementById('label-dark-mode').textContent = t('darkMode');
   document.getElementById('label-default-platform').textContent = t('defaultPlatform');
 
@@ -547,6 +556,7 @@ async function init() {
     'uiLanguage',
     'summaryLanguage',
     'autoOpen',
+    'autoLoad',
     'darkMode',
     'defaultPlatform',
     // Legacy
@@ -574,6 +584,7 @@ async function init() {
 
   // Set checkboxes
   document.getElementById('auto-open').checked = settings.autoOpen !== false;
+  document.getElementById('auto-load').checked = settings.autoLoad === true;
   document.getElementById('dark-mode').checked = settings.darkMode === true;
 
   // Set default platform
@@ -591,6 +602,7 @@ async function init() {
   document.getElementById('test-btn').addEventListener('click', testApiKey);
   document.getElementById('save-btn').addEventListener('click', saveSettings);
   document.getElementById('auto-open').addEventListener('change', saveCheckboxes);
+  document.getElementById('auto-load').addEventListener('change', saveCheckboxes);
   document.getElementById('dark-mode').addEventListener('change', saveCheckboxes);
   document.getElementById('default-platform').addEventListener('change', saveCheckboxes);
 }
@@ -695,9 +707,10 @@ async function saveSettings() {
 
 async function saveCheckboxes() {
   const autoOpen = document.getElementById('auto-open').checked;
+  const autoLoad = document.getElementById('auto-load').checked;
   const darkMode = document.getElementById('dark-mode').checked;
   const defaultPlatform = document.getElementById('default-platform').value;
-  await chrome.storage.local.set({ autoOpen, darkMode, defaultPlatform });
+  await chrome.storage.local.set({ autoOpen, darkMode, defaultPlatform, autoLoad });
 }
 
 function showStatus(message, type) {
