@@ -410,7 +410,10 @@
       <div class="sv-resize-handle"></div>
       <div class="sv-header">
         <h2>AI Skills</h2>
-        <button class="sv-close-btn" title="Close">✕</button>
+        <div class="sv-header-actions">
+          <button class="sv-autoload-btn" title="Auto-load">⚡</button>
+          <button class="sv-close-btn" title="Close">✕</button>
+        </div>
       </div>
       <div class="sv-content"></div>
       <div class="sv-footer">
@@ -431,6 +434,21 @@
     // Bind close button
     sidebarEl.querySelector('.sv-close-btn').addEventListener('click', () => {
       sidebarEl.classList.add('hidden');
+    });
+
+    // Load and reflect current autoLoad state
+    const autoloadBtn = sidebarEl.querySelector('.sv-autoload-btn');
+    chrome.storage.local.get(['autoLoad'], (settings) => {
+      if (settings.autoLoad === true) autoloadBtn.classList.add('active');
+    });
+
+    // Toggle autoLoad flag only — no other side effects
+    autoloadBtn.addEventListener('click', () => {
+      chrome.storage.local.get(['autoLoad'], (settings) => {
+        const next = !(settings.autoLoad === true);
+        chrome.storage.local.set({ autoLoad: next });
+        autoloadBtn.classList.toggle('active', next);
+      });
     });
 
     // Bind settings link
