@@ -1,6 +1,6 @@
 // extension/lib/cloud.js
 
-const CLOUD_API_URL = 'https://skill-viewer.vercel.app';
+const CLOUD_API_URL = 'https://api.sv.jakobhe.com';
 
 export async function getCloudAuth() {
   return new Promise((resolve) => {

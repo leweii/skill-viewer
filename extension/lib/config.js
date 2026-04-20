@@ -3,7 +3,7 @@
 // All API URLs and settings should be defined here
 
 // Cloud API base URL - change this for different environments
-var CLOUD_API_BASE = 'https://skill-viewer.vercel.app';
+var CLOUD_API_BASE = 'https://api.sv.jakobhe.com';
 
 var CONFIG = {
   // Base URL
