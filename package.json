@@ -4,14 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vercel dev",
+    "start": "node server.js",
+    "dev": "node --watch server.js",
     "test": "node --test api/**/*.test.js lib/**/*.test.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
-    "alipay-sdk": "^3.6.1"
-  },
-  "devDependencies": {
-    "vercel": "^33.0.0"
+    "alipay-sdk": "^3.6.1",
+    "express": "^4.19.2"
   }
 }
