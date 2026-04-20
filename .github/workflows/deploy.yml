@@ -32,6 +32,13 @@ jobs:
             --push .
 
 
+      - name: Wait for App Runner to be ready
+        run: |
+          until [ "$(aws apprunner describe-service --service-arn ${{ secrets.APPRUNNER_SERVICE_ARN }} --query 'Service.Status' --output text)" = "RUNNING" ]; do
+            echo "Waiting for App Runner to be RUNNING..."
+            sleep 15
+          done
+
       - name: Deploy to App Runner
         run: |
           aws apprunner start-deployment \
