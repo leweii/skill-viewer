@@ -1,102 +1,66 @@
-// api/summarize.js
-import { getSupabase, verifyToken } from '../lib/supabase.js';
-import { summarizeWithGemini } from '../lib/llm.js';
-import { checkAndDeductQuota, checkAnonymousQuota } from '../lib/quota.js';
+import { getDb } from '../lib/db.js'
+import { summarizeWithGemini } from '../lib/llm.js'
 
-const CACHE_TTL_DAYS = 7;
+const CACHE_TTL_DAYS = 7
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   try {
-    const { repo, skillPath, skillName, skillContent, language = 'en' } = req.body;
+    const { repo, skillPath, skillName, skillContent, language = 'en' } = req.body
 
     if (!repo || !skillPath || !skillName || !skillContent) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: 'Missing required fields' })
     }
 
-    const supabase = getSupabase();
+    const db = getDb()
 
-    // 1. Find or create skill record
-    let { data: skill } = await supabase
-      .from('skills')
-      .select('id')
-      .eq('repo', repo)
-      .eq('skill_path', skillPath)
-      .single();
+    // Find or create skill record
+    const upsertSkill = await db.query(
+      `INSERT INTO skills (repo, skill_path, skill_name)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (repo, skill_path) DO UPDATE SET skill_name = EXCLUDED.skill_name
+       RETURNING id`,
+      [repo, skillPath, skillName]
+    )
+    const skillId = upsertSkill.rows[0].id
 
-    if (!skill) {
-      const { data: newSkill, error } = await supabase
-        .from('skills')
-        .insert({ repo, skill_path: skillPath, skill_name: skillName })
-        .select('id')
-        .single();
+    // Check cache
+    const cacheThreshold = new Date()
+    cacheThreshold.setDate(cacheThreshold.getDate() - CACHE_TTL_DAYS)
 
-      if (error) throw error;
-      skill = newSkill;
+    const cached = await db.query(
+      `SELECT summary FROM summaries
+       WHERE skill_id = $1 AND language = $2 AND created_at >= $3`,
+      [skillId, language, cacheThreshold.toISOString()]
+    )
+
+    if (cached.rows.length > 0) {
+      db.query('UPDATE skills SET view_count = view_count + 1 WHERE id = $1', [skillId])
+      return res.status(200).json({ summary: cached.rows[0].summary, cached: true })
     }
 
-    // 2. Check for cached summary (BEFORE quota check - cache hits are free)
-    const cacheThreshold = new Date();
-    cacheThreshold.setDate(cacheThreshold.getDate() - CACHE_TTL_DAYS);
+    // Generate summary
+    const summary = await summarizeWithGemini(skillName, skillContent, language)
 
-    const { data: cachedSummary } = await supabase
-      .from('summaries')
-      .select('summary')
-      .eq('skill_id', skill.id)
-      .eq('language', language)
-      .gte('created_at', cacheThreshold.toISOString())
-      .single();
+    // Cache it
+    await db.query(
+      `INSERT INTO summaries (skill_id, language, summary)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (skill_id, language) DO UPDATE SET summary = EXCLUDED.summary, created_at = NOW()`,
+      [skillId, language, summary]
+    )
 
-    if (cachedSummary) {
-      await supabase.rpc('increment_view_count', { skill_id: skill.id });
-      return res.status(200).json({ summary: cachedSummary.summary, cached: true });
-    }
+    db.query('UPDATE skills SET view_count = view_count + 1 WHERE id = $1', [skillId])
 
-    // 3. Check quota (only for cache misses)
-    const user = await verifyToken(req.headers.authorization);
-    let quotaResult;
-
-    if (user) {
-      quotaResult = await checkAndDeductQuota(user.id);
-    } else {
-      quotaResult = await checkAnonymousQuota(req.headers['x-forwarded-for'] || 'unknown');
-    }
-
-    if (!quotaResult.allowed) {
-      return res.status(429).json({
-        error: 'quota_exceeded',
-        message: `Daily limit of ${quotaResult.limit} reached. ${user ? 'Upgrade to Pro for higher limits.' : 'Login for more requests.'}`
-      });
-    }
-
-    // 4. Generate new summary
-    const summary = await summarizeWithGemini(skillName, skillContent, language);
-
-    // 5. Cache the summary
-    await supabase
-      .from('summaries')
-      .upsert(
-        { skill_id: skill.id, language, summary, created_at: new Date().toISOString() },
-        { onConflict: 'skill_id,language' }
-      );
-
-    // 6. Update view count
-    await supabase.rpc('increment_view_count', { skill_id: skill.id });
-
-    return res.status(200).json({ summary, cached: false });
+    return res.status(200).json({ summary, cached: false })
   } catch (error) {
-    console.error('Summarize error:', error);
-    return res.status(500).json({ error: error.message });
+    console.error('Summarize error:', error)
+    return res.status(500).json({ error: error.message })
   }
 }
