@@ -34,7 +34,7 @@ Skill Viewer - Claude Code Skills Browser
 View and summarize Claude Code skills on GitHub. AI-powered summaries with Gemini, OpenAI, or Claude.
 ```
 
-### Detailed Description
+### Detailed Description sssss
 ```
 Skill Viewer automatically detects and displays Claude Code skills when you browse GitHub repositories.
 
