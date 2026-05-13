@@ -6,7 +6,7 @@ ss
 
 Skill Viewer is a Chrome extension that displays AI coding skills found in GitHub repositories. It supports multiple platforms (Claude, Gemini, OpenCode, Codex, Cursor) and scans for skills in `.claude/skills/`, `.gemini/skills/`, `.opencode/skills/`, `.codex/skills/`, `.cursor/skills/`, or `skills/` directories, with AI-generated summaries.
 
-## Development Setup
+## Development Setup大大发
 
 1. Open `chrome://extensions`
 2. Enable Developer mode
