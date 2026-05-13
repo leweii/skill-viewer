@@ -135,7 +135,7 @@ git clone https://github.com/leweii/skill-viewer.git
 # 3. Load unpacked -> select extension folder
 ```
 
-## License
+## Licenses
 
 MIT
 
