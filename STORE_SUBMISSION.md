@@ -8,7 +8,7 @@
 ## Assets Ready
 
 ### Icons (in `extension/icons/`)
-- `icon16.png` - 16x16 favicon
+- `icon16.png` - 16x16 faviconsssfdsafdaf
 - `icon48.png` - 48x48 management page
 - `icon128.png` - 128x128 store listing
 
