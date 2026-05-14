@@ -137,7 +137,7 @@ git clone https://github.com/leweii/skill-viewer.git
 
 ## License
 
-MITzzaass
+MITzzaassaa
 
 ---
 
