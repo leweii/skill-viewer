@@ -1,4 +1,4 @@
-# Skill Viewer
+# Skill Viewerrrrr
 
 <p align="center">
   <img src="extension/icons/icon128.png" alt="Skill Viewer Logo" width="128" height="128">
